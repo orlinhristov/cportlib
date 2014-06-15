@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-enum class completion_status : unsigned short
+enum class completion_status
 { 
     none,
     scheduled,
