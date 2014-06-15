@@ -11,7 +11,8 @@
 //
 
 #include <cstddef>
-#ifdef CPORT_ENABLE_TASK_STATE
+#ifdef CPORT_ENABLE_TASK_STATUS
+#include <completion_status.hpp>
 #include <detail/event.hpp>
 #include <atomic>
 #include <memory>
@@ -28,9 +29,9 @@ public:
 
     operation_id(value_type vt = value_type())
         : value_(vt)
-#ifdef CPORT_ENABLE_TASK_STATE
-        , state_(new atomic_state(none))
-        , state_event_(new event())
+#ifdef CPORT_ENABLE_TASK_STATUS
+        , status_(new atomic_status(completion_status::none))
+        , completion_event_(new event())
 #endif
     {
     }
@@ -39,9 +40,9 @@ public:
 
     operation_id(operation_id&& op)
         : value_(op.value_)
-#ifdef CPORT_ENABLE_TASK_STATE
-        , state_(std::move(op.state_))
-        , state_event_(std::move(op.state_event_))
+#ifdef CPORT_ENABLE_TASK_STATUS
+        , status_(std::move(op.status_))
+        , completion_event_(std::move(op.completion_event_))
 #endif
     {
     }
@@ -53,9 +54,9 @@ public:
         if (this != &op)
         {
             value_ = op.value_;
-#ifdef CPORT_ENABLE_TASK_STATE
-            state_ = std::move(op.state_);
-            state_event_ = std::move(op.state_event_);
+#ifdef CPORT_ENABLE_TASK_STATUS
+            status_ = std::move(op.status_);
+            completion_event_ = std::move(op.completion_event_);
 #endif
         }
         return *this;
@@ -85,38 +86,39 @@ public:
     {
         return value_;
     }
-#ifdef CPORT_ENABLE_TASK_STATE
-    enum state { none, scheduled, executing, canceled, complete };
-
-    state get_state() const
+#ifdef CPORT_ENABLE_TASK_STATUS
+    completion_status get_status() const
     {
-        return state_->load();
+        return status_->load();
     }
 
-    void set_state(state s)
+    void set_status(completion_status s)
     {
-        state_->store(s);
-        if (canceled == s || complete == s)
-            state_event_->notify_all();
+        status_->store(s);
+        if (completion_status::canceled == s
+            || completion_status::complete == s)
+        {
+            completion_event_->notify_all();
+        }
     }
 
     void wait()
     {
-        state_event_->wait();
+        completion_event_->wait();
     }
 #endif
 
 private:
+    value_type value_;
 
-#ifdef CPORT_ENABLE_TASK_STATE
-    typedef std::atomic<state> atomic_state;
-    typedef std::shared_ptr<atomic_state> shared_atomic_state;
-    shared_atomic_state state_;
+#ifdef CPORT_ENABLE_TASK_STATUS
+    typedef std::atomic<completion_status> atomic_status;
+    typedef std::shared_ptr<atomic_status> shared_atomic_status;
+    shared_atomic_status status_;
 
     typedef std::shared_ptr<event> shared_event;
-    shared_event state_event_;
+    shared_event completion_event_;
 #endif
-    value_type value_;
 };
 
 } // namespace detail

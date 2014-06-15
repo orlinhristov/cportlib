@@ -57,10 +57,10 @@ public:
         return *this != task_t();
     }
 
-#ifdef CPORT_ENABLE_TASK_STATE
-    value_type::state get_state() const
+#ifdef CPORT_ENABLE_TASK_STATUS
+    completion_status get_status() const
     {
-        return id_.get_state();
+        return id_.get_status();
     }
 
     void wait()

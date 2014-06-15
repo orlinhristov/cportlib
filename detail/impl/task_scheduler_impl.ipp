@@ -65,8 +65,8 @@ inline void task_scheduler_impl::enqueue_task(task_handler_base *h)
 {
     std::unique_lock<std::mutex> lock(guard_);
     pending_tasks_.push_back(h);
-#ifdef CPORT_ENABLE_TASK_STATE
-    h->id().set_state(operation_id::scheduled);
+#ifdef CPORT_ENABLE_TASK_STATUS
+    h->id().set_status(completion_status::scheduled);
 #endif
     cond_.notify_one();
 }
@@ -74,8 +74,8 @@ inline void task_scheduler_impl::enqueue_task(task_handler_base *h)
 inline void task_scheduler_impl::cancel_pending_task(task_handler_base *h,
     const generic_error &e)
 {
-#ifdef CPORT_ENABLE_TASK_STATE
-    h->id().set_state(operation_id::canceled);
+#ifdef CPORT_ENABLE_TASK_STATUS
+    h->id().set_status(completion_status::canceled);
 #endif
 
     h->post_complete(port_, e);
@@ -121,13 +121,13 @@ void task_scheduler_impl::thread_routine_loop()
             auto_destroy task(pending_tasks_.front());
             pending_tasks_.pop_front();
             lock.unlock();
-#ifdef CPORT_ENABLE_TASK_STATE
-            task->id().set_state(operation_id::executing);
+#ifdef CPORT_ENABLE_TASK_STATUS
+            task->id().set_status(completion_status::executing);
 #endif
             task->execute(port_);
 
-#ifdef CPORT_ENABLE_TASK_STATE
-            task->id().set_state(operation_id::complete);
+#ifdef CPORT_ENABLE_TASK_STATUS
+            task->id().set_status(completion_status::complete);
 #endif
         }
     }
