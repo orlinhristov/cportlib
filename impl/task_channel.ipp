@@ -32,25 +32,25 @@ bool task_channel::cancel(const task_t &task)
 
     std::unique_lock<std::mutex> lock(mutex_);
     if (task == current_task_)
-	{
+    {
         canceled = std::find_if(canceled_tasks_.begin()
             , canceled_tasks_.end(), find_task_pred(task)) != canceled_tasks_.end();
 
         if (!canceled)
-		{
+        {
             canceled = ts_.cancel(task);
         }
     }
     else if (!pending_tasks_.empty())
-	{
+    {
         assert(current_task_);
 
-		// We use iterator here as erase on const_iterator not implemented before g++ v.4.9.0.
+        // We use iterator here as erase on const_iterator not implemented before g++ v.4.9.0.
         const task_deque::iterator it = std::find_if(pending_tasks_.begin()
             , pending_tasks_.end(), find_task_pred(task));
 
         if (it != pending_tasks_.end())
-		{
+        {
             canceled_tasks_.push_back(*it);
             pending_tasks_.erase(it);
             canceled = true;
@@ -61,25 +61,25 @@ bool task_channel::cancel(const task_t &task)
 
 std::size_t task_channel::cancel_all()
 {
-	std::size_t count = 0;
+    std::size_t count = 0;
 
     std::unique_lock<std::mutex> lock(mutex_);
     if (current_task_)
-	{
+    {
         if (std::find_if(canceled_tasks_.begin(), canceled_tasks_.end()
             , find_task_pred(current_task_)) != canceled_tasks_.end())
         {
             ts_.cancel(current_task_);
-			++count;
+            ++count;
         }
     }
 
     std::copy(pending_tasks_.begin(), pending_tasks_.end()
         , std::back_insert_iterator<task_deque>(canceled_tasks_));
 
-	count += pending_tasks_.size();
+    count += pending_tasks_.size();
     pending_tasks_.clear();
-	return count;
+    return count;
 }
 
 inline std::size_t task_channel::enqueued_tasks() const
@@ -110,7 +110,7 @@ void task_channel::enqueue_next_task()
     std::unique_lock<std::mutex> lock(mutex_);
 
     if (!canceled_tasks_.empty())
-	{
+    {
         detail::task_handler_base *h = canceled_tasks_.front();
         canceled_tasks_.pop_front();
         complete_task(h, lock);
@@ -118,7 +118,7 @@ void task_channel::enqueue_next_task()
     }
 
     if (!pending_tasks_.empty())
-	{
+    {
         detail::task_handler_base *h = pending_tasks_.front();
         pending_tasks_.pop_front();
         enqueue_task(h, lock);

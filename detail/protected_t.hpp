@@ -37,7 +37,7 @@ private:
 template <typename F>
 protected_t<F> protect(F f)
 {
-	return protected_t<F>(f);
+    return protected_t<F>(f);
 }
 
 } // namespace mt

@@ -27,7 +27,7 @@ class completion_port_impl {
 public:
     CPORT_DECL_TYPE completion_port_impl();
 
-	CPORT_DECL_TYPE ~completion_port_impl();
+    CPORT_DECL_TYPE ~completion_port_impl();
 
     template <typename Handler>
     void dispatch(Handler h, const generic_error &e);
@@ -38,25 +38,25 @@ public:
     template <typename Handler>
     void call(Handler h, const generic_error &e);
 
-	CPORT_DECL_TYPE bool wait_one();
+    CPORT_DECL_TYPE bool wait_one();
 
-	CPORT_DECL_TYPE bool run_one();
+    CPORT_DECL_TYPE bool run_one();
     
-	CPORT_DECL_TYPE bool pull_one();
+    CPORT_DECL_TYPE bool pull_one();
 
-	CPORT_DECL_TYPE void reset();
+    CPORT_DECL_TYPE void reset();
 
-	CPORT_DECL_TYPE void stop();
+    CPORT_DECL_TYPE void stop();
 
-	CPORT_DECL_TYPE bool stopped() const;
+    CPORT_DECL_TYPE bool stopped() const;
 
-	CPORT_DECL_TYPE std::size_t ready_handlers() const;
+    CPORT_DECL_TYPE std::size_t ready_handlers() const;
 
-	CPORT_DECL_TYPE std::size_t next_operation_id();
+    CPORT_DECL_TYPE std::size_t next_operation_id();
 
 
 private:
-	CPORT_DECL_TYPE bool do_one(std::unique_lock<std::mutex> &lock);
+    CPORT_DECL_TYPE bool do_one(std::unique_lock<std::mutex> &lock);
 
     bool stopped_;
     // Number of threads blocked on wait_one operation

@@ -30,36 +30,36 @@ public:
         : value_(vt)
 #ifdef CPORT_ENABLE_TASK_STATE
         , state_(new atomic_state(none))
-		, state_event_(new event())
+        , state_event_(new event())
 #endif
     {
     }
 
-	operation_id(const operation_id & op) = default;
+    operation_id(const operation_id & op) = default;
 
     operation_id(operation_id&& op)
         : value_(op.value_)
 #ifdef CPORT_ENABLE_TASK_STATE
         , state_(std::move(op.state_))
-		, state_event_(std::move(op.state_event_))
+        , state_event_(std::move(op.state_event_))
 #endif
     {
     }
 
-	operation_id& operator=(const operation_id & op) = default;
+    operation_id& operator=(const operation_id & op) = default;
 
-	operation_id& operator=(operation_id&& op)
-	{
-		if (this != &op)
-		{
-			value_ = op.value_;
+    operation_id& operator=(operation_id&& op)
+    {
+        if (this != &op)
+        {
+            value_ = op.value_;
 #ifdef CPORT_ENABLE_TASK_STATE
-			state_ = std::move(op.state_);
-			state_event_ = std::move(op.state_event_);
+            state_ = std::move(op.state_);
+            state_event_ = std::move(op.state_event_);
 #endif
-		}
-		return *this;
-	}
+        }
+        return *this;
+    }
 
     bool operator==(const operation_id &op) const
     {
@@ -76,10 +76,10 @@ public:
         return value_ < op.value_;
     }
 
-	bool valid() const
-	{
-		return value_ != value_type();
-	}
+    bool valid() const
+    {
+        return value_ != value_type();
+    }
 
     operator value_type() const
     {
@@ -96,14 +96,14 @@ public:
     void set_state(state s)
     {
         state_->store(s);
-		if (canceled == s || complete == s)
-			state_event_->notify_all();
+        if (canceled == s || complete == s)
+            state_event_->notify_all();
     }
 
-	void wait()
-	{
-		state_event_->wait();
-	}
+    void wait()
+    {
+        state_event_->wait();
+    }
 #endif
 
 private:
@@ -113,8 +113,8 @@ private:
     typedef std::shared_ptr<atomic_state> shared_atomic_state;
     shared_atomic_state state_;
 
-	typedef std::shared_ptr<event> shared_event;
-	shared_event state_event_;
+    typedef std::shared_ptr<event> shared_event;
+    shared_event state_event_;
 #endif
     value_type value_;
 };

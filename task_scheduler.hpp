@@ -33,7 +33,7 @@ public:
      * @param concurrency_hint A number of worker threads to run.
      *  0 == number of concurrent threads supported by the system.
      */
-	CPORT_DECL_TYPE task_scheduler(completion_port &port, std::size_t concurrency_hint = 0);
+    CPORT_DECL_TYPE task_scheduler(completion_port &port, std::size_t concurrency_hint = 0);
 
     /// Construct new task_scheduler object.
     /**
@@ -105,7 +105,7 @@ public:
      * @returns true if the task associated with the task identifier
      *  was canceled.
      */
-	CPORT_DECL_TYPE bool cancel(const task_t &task);
+    CPORT_DECL_TYPE bool cancel(const task_t &task);
 
     /// Cancel all outstanding tasks.
     /**
@@ -114,15 +114,15 @@ public:
      *
      * @returns The number of tasks canceled.
      */
-	CPORT_DECL_TYPE std::size_t cancel_all();
+    CPORT_DECL_TYPE std::size_t cancel_all();
 
     /// Return the number of outstanding tasks. Tasks that are currently
     /// executing are not included.
     std::size_t packaged_tasks() const;
 
 protected:
-	CPORT_DECL_TYPE const impl_type& impl() const;
-	CPORT_DECL_TYPE impl_type& impl();
+    CPORT_DECL_TYPE const impl_type& impl() const;
+    CPORT_DECL_TYPE impl_type& impl();
 private:
     template<typename T>
     friend const typename T::impl_type& detail::get_impl(const T&);

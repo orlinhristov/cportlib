@@ -34,7 +34,7 @@ public:
 
     task_channel(const task_channel&) = delete;
 
-	task_channel& operator=(const task_channel&) = delete;
+    task_channel& operator=(const task_channel&) = delete;
 
     /// Enqueue a task for an asynchronous execution
     /**
@@ -71,7 +71,7 @@ public:
     * @returns true if the task associated with the task identifier
     *  was canceled.
     */
-	CPORT_DECL_TYPE bool cancel(const task_t &task);
+    CPORT_DECL_TYPE bool cancel(const task_t &task);
 
     /// Cancel all outstanding tasks.
     /**
@@ -80,33 +80,33 @@ public:
     *
     * @returns The number of tasks canceled.
     */
-	CPORT_DECL_TYPE std::size_t cancel_all();
+    CPORT_DECL_TYPE std::size_t cancel_all();
 
     /// Return the number of outstanding tasks scheduled through this channel.
     /// Tasks that are currently executing are not included.
-	CPORT_DECL_TYPE std::size_t enqueued_tasks() const;
+    CPORT_DECL_TYPE std::size_t enqueued_tasks() const;
 private:
     struct find_task_pred {
-		find_task_pred& operator=(const find_task_pred&) = delete;
+        find_task_pred& operator=(const find_task_pred&) = delete;
 
         explicit find_task_pred(const task_t &t)
-			: task(t)
-		{
+            : task(t)
+        {
         }
 
         bool operator() (const detail::task_handler_base *h) const
-		{
+        {
             return task_t(h->id()) == task;
         }
 
-		const task_t& task;
+        const task_t& task;
     };
 
-	CPORT_DECL_TYPE void enqueue_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock);
+    CPORT_DECL_TYPE void enqueue_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock);
 
-	CPORT_DECL_TYPE void complete_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock);
+    CPORT_DECL_TYPE void complete_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock);
 
-	CPORT_DECL_TYPE void enqueue_next_task();
+    CPORT_DECL_TYPE void enqueue_next_task();
 
     template <typename Handler>
     void task_handler_proxy(generic_error &e, Handler h);
@@ -132,17 +132,17 @@ task_t task_channel::enqueue(TaskHandler th, CompletionHandler ch)
     const detail::operation_id opid(port.next_operation_id());
     if (opid.valid()) {
         auto thp = std::bind(&task_channel::task_handler_proxy<TaskHandlerP>
-			, shared_from_this()
-			, placeholders::error
-			, TaskHandlerP(th));
+            , shared_from_this()
+            , placeholders::error
+            , TaskHandlerP(th));
 
         auto chp = std::bind(&task_channel::completion_handler_proxy<CompletionHandlerP>
-			, shared_from_this()
-			, placeholders::error
-			, CompletionHandlerP(ch));
+            , shared_from_this()
+            , placeholders::error
+            , CompletionHandlerP(ch));
 
         detail::task_handler_base *w =
-			detail::task_handler<decltype(thp), decltype(chp)>::construct(thp, chp, opid);
+            detail::task_handler<decltype(thp), decltype(chp)>::construct(thp, chp, opid);
 
         std::unique_lock<std::mutex> lock(mutex_);
         if (current_task_) {

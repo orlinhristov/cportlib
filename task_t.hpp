@@ -17,30 +17,30 @@ namespace mt {
 
 class task_t {
 public:
-	typedef detail::operation_id value_type;
+    typedef detail::operation_id value_type;
 
     explicit task_t(value_type id = value_type())
         : id_(id)
     {
     }
 
-	task_t(const task_t& t) = default;
+    task_t(const task_t& t) = default;
 
     task_t(task_t&& t)
         : id_(std::move(t.id_))
     {
     }
 
-	task_t& operator=(const task_t& t) = default;
+    task_t& operator=(const task_t& t) = default;
 
-	task_t& operator=(task_t&& t)
-	{
-		if (this != &t)
-		{
-			id_ = std::move(t.id_);
-		}
-		return *this;
-	}
+    task_t& operator=(task_t&& t)
+    {
+        if (this != &t)
+        {
+            id_ = std::move(t.id_);
+        }
+        return *this;
+    }
 
     bool operator==(const task_t &t) const
     {
@@ -63,10 +63,10 @@ public:
         return id_.get_state();
     }
 
-	void wait()
-	{
-		id_.wait();
-	}
+    void wait()
+    {
+        id_.wait();
+    }
 #endif
 
 private:

@@ -28,13 +28,13 @@ public:
     /**
      * @note All ready completion handlers will be processed before destroy.
      */
-	CPORT_DECL_TYPE ~completion_port();
+    CPORT_DECL_TYPE ~completion_port();
 
     /// Disable copy constructor
-	completion_port(const completion_port&) = delete;
+    completion_port(const completion_port&) = delete;
 
     /// Disable assignment operator
-	completion_port& operator=(const completion_port&) = delete;
+    completion_port& operator=(const completion_port&) = delete;
 
     /// Dispatch a completion handler.
     /**
@@ -116,7 +116,7 @@ public:
      *
      * @returns The number of processed handlers.
      */
-	CPORT_DECL_TYPE std::size_t wait();
+    CPORT_DECL_TYPE std::size_t wait();
 
     /// Wait for one ready completion handler to be processed.
     /**
@@ -126,7 +126,7 @@ public:
      *
      * @returns true if a handler was processed, otherwise returns false.
      */
-	CPORT_DECL_TYPE bool wait_one();
+    CPORT_DECL_TYPE bool wait_one();
 
     /// Run processing of ready completion handlers.
     /**
@@ -134,7 +134,7 @@ public:
      *
      * @returns The number of processed handlers.
      */
-	CPORT_DECL_TYPE std::size_t run();
+    CPORT_DECL_TYPE std::size_t run();
 
     /// Run processing of ready completion handlers.
     /**
@@ -143,7 +143,7 @@ public:
      *
      * @returns true if a handler was processed, otherwise will return false.
      */
-	CPORT_DECL_TYPE bool run_one();
+    CPORT_DECL_TYPE bool run_one();
 
     /// Run processing of ready completion handlers.
     /**
@@ -152,7 +152,7 @@ public:
      *
      * @returns The number of processed handlers.
      */
-	CPORT_DECL_TYPE std::size_t pull();
+    CPORT_DECL_TYPE std::size_t pull();
 
     /// Run processing of one ready completion handlers.
     /**
@@ -161,21 +161,21 @@ public:
      *
      * @returns true if a handlers was processed, otherwise will return false.
      */
-	CPORT_DECL_TYPE bool pull_one();
+    CPORT_DECL_TYPE bool pull_one();
 
     /// Interrupt all threads blocked on wait(), wait_one(),
     /// run() and run_one() methods.
-	CPORT_DECL_TYPE void stop();
+    CPORT_DECL_TYPE void stop();
 
     /// Test if the port is stopped.
-	CPORT_DECL_TYPE bool stopped() const;
+    CPORT_DECL_TYPE bool stopped() const;
 
     /// Reset stopped state of this port.
     /**
      * This method must always be called before call to wait(), wait_one(),
      * run() or run_one() methods if the port was previously stopped.
      */
-	CPORT_DECL_TYPE void reset();
+    CPORT_DECL_TYPE void reset();
 
     /// Get the number of ready completion handlers, ready to be called.
     std::size_t ready_handlers() const;
@@ -183,8 +183,8 @@ public:
     /// The implementation type
     typedef detail::completion_port_impl impl_type;
 protected:
-	CPORT_DECL_TYPE const impl_type& impl() const;
-	CPORT_DECL_TYPE impl_type& impl();
+    CPORT_DECL_TYPE const impl_type& impl() const;
+    CPORT_DECL_TYPE impl_type& impl();
 private:
     template<typename T>
     friend const typename T::impl_type& detail::get_impl(const T&);
