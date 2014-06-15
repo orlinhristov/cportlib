@@ -10,13 +10,18 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-enum class completion_status
-{ 
+namespace mt {
+
+// The scoped enumeration describes current task execution status
+
+enum class completion_status { 
     none,
-    scheduled,
-    executing,
-    canceled,
-    complete,
+    scheduled, // The operation is scheduled for execution.
+    executing, // The operation is currently executing.
+    canceled, // The operation execution is aborted.
+    complete, // The operation is executed.
 };
+
+}
 
 #endif//__COMPLETION_STATE_HPP__
