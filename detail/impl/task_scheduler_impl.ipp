@@ -47,40 +47,6 @@ bool task_scheduler_impl::cancel(const task_t &task)
     return true;
 }
 
-inline std::size_t task_scheduler_impl::cancel_all()
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    const std::size_t count = pending_tasks_.size();
-    cancel_pending_tasks();
-    return count;
-}
-
-inline std::size_t task_scheduler_impl::packaged_tasks() const
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    return pending_tasks_.size();
-}
-
-inline void task_scheduler_impl::enqueue_task(task_handler_base *h)
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    pending_tasks_.push_back(h);
-#ifdef CPORT_ENABLE_TASK_STATUS
-    h->id().set_status(completion_status::scheduled);
-#endif
-    cond_.notify_one();
-}
-
-inline void task_scheduler_impl::cancel_pending_task(task_handler_base *h,
-    const generic_error &e)
-{
-#ifdef CPORT_ENABLE_TASK_STATUS
-    h->id().set_status(completion_status::canceled);
-#endif
-
-    h->post_complete(port_, e);
-}
-
 void task_scheduler_impl::cancel_pending_tasks()
 {
     const operation_aborted_error e;
@@ -88,22 +54,6 @@ void task_scheduler_impl::cancel_pending_tasks()
         auto_destroy task(pending_tasks_.front());
         pending_tasks_.pop_front();
         cancel_pending_task(task.get(), e);
-    }
-}
-
-void task_scheduler_impl::stop_threads()
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    threads_stopped_ = true;
-    cond_.notify_all();
-}
-
-void task_scheduler_impl::join_threads()
-{
-    for (std::thread & t : threads_) {
-        if (t.joinable()) {
-            t.join();
-        }
     }
 }
 

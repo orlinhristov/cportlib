@@ -18,6 +18,7 @@
 namespace mt {
 
 class completion_port;
+
 class task_scheduler {
 public:
     /// The implementation type
@@ -105,7 +106,7 @@ public:
      * @returns true if the task associated with the task identifier
      *  was canceled.
      */
-    CPORT_DECL_TYPE bool cancel(const task_t &task);
+    bool cancel(const task_t &task);
 
     /// Cancel all outstanding tasks.
     /**
@@ -114,15 +115,15 @@ public:
      *
      * @returns The number of tasks canceled.
      */
-    CPORT_DECL_TYPE std::size_t cancel_all();
+    std::size_t cancel_all();
 
     /// Return the number of outstanding tasks. Tasks that are currently
     /// executing are not included.
     std::size_t packaged_tasks() const;
 
 protected:
-    CPORT_DECL_TYPE const impl_type& impl() const;
-    CPORT_DECL_TYPE impl_type& impl();
+    const impl_type& impl() const;
+    impl_type& impl();
 private:
     template<typename T>
     friend const typename T::impl_type& detail::get_impl(const T&);
@@ -132,34 +133,9 @@ private:
     impl_type impl_;
 };
 
-template <typename WorkerThreadContext>
-task_scheduler::task_scheduler(completion_port &port, WorkerThreadContext wtc)
-    : impl_(detail::get_impl(port), 0, wtc)
-{
-}
-
-template <typename WorkerThreadContext>
-task_scheduler::task_scheduler(completion_port &port,
-                               std::size_t concurrency_hint,
-                               WorkerThreadContext wtc)
-    : impl_(detail::get_impl(port), concurrency_hint, wtc)
-{
-}
-
-template <typename TaskHandler, typename CompletionHandler>
-inline task_t task_scheduler::async(TaskHandler th, CompletionHandler ch)
-{
-    return impl().async(th, ch);
-}
-
-template <typename Handler>
-inline task_t task_scheduler::async(Handler h)
-{
-    return async(h, detail::null_handler_t());
-}
-
 } // namespace mt
 
+#include <impl/task_scheduler.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
 #include <impl/task_scheduler.ipp>
 #endif//CPORT_HEADER_ONLY_LIB

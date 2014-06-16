@@ -11,9 +11,7 @@
 //
 
 #include <config.hpp>
-#include <detail/completion_handler.hpp>
-#include <detail/null_handler_t.hpp>
-#include <cassert>
+#include <detail/completion_handler_base.hpp>
 #include <condition_variable>
 #include <memory>
 #include <queue>
@@ -42,20 +40,21 @@ public:
 
     CPORT_DECL_TYPE bool run_one();
     
-    CPORT_DECL_TYPE bool pull_one();
+    bool pull_one();
 
-    CPORT_DECL_TYPE void reset();
+    void reset();
 
-    CPORT_DECL_TYPE void stop();
+    void stop();
 
-    CPORT_DECL_TYPE bool stopped() const;
+    bool stopped() const;
 
-    CPORT_DECL_TYPE std::size_t ready_handlers() const;
+    std::size_t ready_handlers() const;
 
     CPORT_DECL_TYPE std::size_t next_operation_id();
-
-
+    
 private:
+    CPORT_DECL_TYPE void post(completion_handler_base *h);
+
     CPORT_DECL_TYPE bool do_one(std::unique_lock<std::mutex> &lock);
 
     bool stopped_;
@@ -70,74 +69,25 @@ private:
     {
         const std::size_t gap;
 
-        priority_less_pred& operator=(const priority_less_pred &);
+        priority_less_pred& operator=(const priority_less_pred &) = delete;
 
-        priority_less_pred()
-            : gap(std::numeric_limits<std::size_t>::max()/2)
-        {
-        }
+        CPORT_DECL_TYPE priority_less_pred();
 
-        std::size_t diff(std::size_t s1, std::size_t s2)
-        {
-            return s1 > s2 ? s1 - s2 : s2 - s1;
-        }
+        CPORT_DECL_TYPE std::size_t diff(std::size_t s1, std::size_t s2);
 
-        bool operator()(const completion_handler_base *h1,
-                        const completion_handler_base *h2)
-        {
-            if (h1->seqno() == 0)
-                return false;
-
-            if (h2->seqno() == 0)
-                return true;
-
-            if (diff(h1->seqno(), h2->seqno()) > gap)
-                return h1->seqno() < h2->seqno();
-            return h1->seqno() > h2->seqno();
-        }
+        CPORT_DECL_TYPE bool operator()(const completion_handler_base *h1,
+                                        const completion_handler_base *h2);
     };
 
     std::priority_queue<completion_handler_base *,
         std::vector<completion_handler_base *>, priority_less_pred> handlers_;
 };
 
-template <typename Handler>
-void completion_port_impl::post(Handler h,
-                                std::size_t seqno,
-                                const generic_error &e)
-{
-    completion_handler_base *wrapper = 
-        completion_handler<Handler>::construct(h, seqno, e);
-
-    std::unique_lock<std::mutex> lock(guard_);
-    handlers_.push(wrapper);
-
-    assert(seqno == 0 || queued_ops_ > 0);
-    if (seqno > 0)
-        --queued_ops_;
-
-    if (queued_ops_ == 0 && wait_one_threads_ > 0)
-        cond_.notify_all();
-    else
-        cond_.notify_one();
-}
-
-template <typename Handler>
-inline void completion_port_impl::dispatch(Handler h, const generic_error &e)
-{
-    post(h, 0, e);
-}
-
-template <typename Handler>
-inline void completion_port_impl::call(Handler h, const generic_error &e)
-{
-    h(e);
-}
-
 } // namespace detail
 
 } // namespace mt
 
+#include <detail/impl/completion_port_impl.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
 #include <detail/impl/completion_port_impl.ipp>
 #endif//CPORT_HEADER_ONLY_LIB

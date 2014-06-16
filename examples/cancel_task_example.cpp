@@ -22,14 +22,13 @@ int main()
 
     // initialize task_scheduler passing user-defined worker thread context
     task_scheduler ts(p, [&](task_scheduler::worker_func_prototype fn) {
-            // block the worker thread startup
-            std::unique_lock<std::mutex> lock(m);
-            cv.wait(lock);
-            lock.unlock();
-            // call the worker
-            fn();
-        }
-    );
+        // block the worker thread startup
+        std::unique_lock<std::mutex> lock(m);
+        cv.wait(lock);
+        lock.unlock();
+        // call the worker
+        fn();
+    });
 
     // schedule a task for asynhronous execution
     task_t t = ts.async(

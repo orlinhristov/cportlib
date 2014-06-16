@@ -11,21 +11,22 @@
 //
 
 #include <config.hpp>
-#include <completion_port.hpp>
 #include <error_types.hpp>
 #include <task_t.hpp>
 #include <detail/task_handler.hpp>
-#include <detail/protected_t.hpp>
 #include <condition_variable>
-#include <memory>
-#include <deque>
-#include <thread>
-#include <functional>
 #include <algorithm>
+#include <deque>
+#include <functional>
+#include <memory>
+#include <thread>
+#include <vector>
 
 namespace mt {
 
 namespace detail {
+
+class completion_port_impl;
 
 class task_scheduler_impl {
     typedef std::unique_ptr<task_handler_base, destroyable_deletor> auto_destroy;
@@ -44,16 +45,13 @@ public:
 
     CPORT_DECL_TYPE bool cancel(const task_t &task);
 
-    CPORT_DECL_TYPE std::size_t cancel_all();
+    std::size_t cancel_all();
 
-    CPORT_DECL_TYPE std::size_t packaged_tasks() const;
+    std::size_t packaged_tasks() const;
 
-    CPORT_DECL_TYPE void enqueue_task(task_handler_base *h);
+    void enqueue_task(task_handler_base *h);
 
-    completion_port_impl& get_completion_port()
-    {
-        return port_;
-    }
+    completion_port_impl& get_completion_port();
 
 private:
     void cancel_pending_task(task_handler_base *h
@@ -61,9 +59,9 @@ private:
     
     CPORT_DECL_TYPE void cancel_pending_tasks();
 
-    CPORT_DECL_TYPE void stop_threads();
+    void stop_threads();
 
-    CPORT_DECL_TYPE void join_threads();
+    void join_threads();
 
     template <typename WorkerThreadContext>
     void thread_routine(WorkerThreadContext wtc);
@@ -78,50 +76,11 @@ private:
     bool threads_stopped_;
 };
 
-template <typename WorkerThreadContext>
-task_scheduler_impl::task_scheduler_impl(completion_port_impl &port
-    , std::size_t concurrency_hint
-    , WorkerThreadContext wtc)
-    : port_(port)
-    , threads_stopped_(false)
-{
-    if (concurrency_hint == 0)
-        concurrency_hint = std::max<std::size_t>(std::thread::hardware_concurrency(), 1);
-
-    typedef detail::protected_t<WorkerThreadContext> WorkerThreadContextP;
-
-    threads_.resize(concurrency_hint);
-    for (std::size_t i = 0; i < concurrency_hint; ++i)
-    {
-        threads_[i] = std::thread(std::bind(
-            &task_scheduler_impl::thread_routine<WorkerThreadContextP>,
-            this,
-            WorkerThreadContextP(wtc)));
-    }
-}
-
-template <typename TaskHandler, typename CompletionHandler>
-inline task_t task_scheduler_impl::async(TaskHandler th, CompletionHandler ch)
-{
-    typedef task_handler<TaskHandler, CompletionHandler> Wrapper;
-    const operation_id id = port_.next_operation_id();
-    if (id.valid())
-    {
-        enqueue_task(Wrapper::construct(th, ch, id));
-    }
-    return task_t(id);
-}
-
-template <typename WorkerThreadContext>
-inline void task_scheduler_impl::thread_routine(WorkerThreadContext wtc)
-{
-    wtc(std::bind(&task_scheduler_impl::thread_routine_loop, this));
-}
-
 } // namespace detail
 
 } // namespace mt
 
+#include <detail/impl/task_scheduler_impl.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
 #include <detail/impl/task_scheduler_impl.ipp>
 #endif//CPORT_HEADER_ONLY_LIB

@@ -13,13 +13,15 @@
 #include <config.hpp>
 #include <task_t.hpp>
 #include <placeholders.hpp>
-#include <detail/impl_accessor.hpp>
-#include <detail/task_handler_base.hpp>
 #include <deque>
 #include <mutex>
 #include <memory>
 
 namespace mt {
+
+namespace detail {
+class task_handler_base;
+}
 
 class task_scheduler;
 /// This class is a task_scheduler wrapper that guarantees sequential execution of tasks
@@ -84,7 +86,7 @@ public:
 
     /// Return the number of outstanding tasks scheduled through this channel.
     /// Tasks that are currently executing are not included.
-    CPORT_DECL_TYPE std::size_t enqueued_tasks() const;
+    std::size_t enqueued_tasks() const;
 private:
     struct find_task_pred {
         find_task_pred& operator=(const find_task_pred&) = delete;
@@ -122,60 +124,9 @@ private:
     task_scheduler &ts_;
 };
 
-template <typename TaskHandler, typename CompletionHandler>
-task_t task_channel::enqueue(TaskHandler th, CompletionHandler ch)
-{
-    typedef detail::protected_t<TaskHandler> TaskHandlerP;
-    typedef detail::protected_t<CompletionHandler> CompletionHandlerP;
-    detail::task_scheduler_impl& ts = detail::get_impl(ts_);
-    detail::completion_port_impl& port = ts.get_completion_port();
-    const detail::operation_id opid(port.next_operation_id());
-    if (opid.valid()) {
-        auto thp = std::bind(&task_channel::task_handler_proxy<TaskHandlerP>
-            , shared_from_this()
-            , placeholders::error
-            , TaskHandlerP(th));
-
-        auto chp = std::bind(&task_channel::completion_handler_proxy<CompletionHandlerP>
-            , shared_from_this()
-            , placeholders::error
-            , CompletionHandlerP(ch));
-
-        detail::task_handler_base *w =
-            detail::task_handler<decltype(thp), decltype(chp)>::construct(thp, chp, opid);
-
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (current_task_) {
-            pending_tasks_.push_back(w);
-        }
-        else {
-            enqueue_task(w, lock);
-        }
-    }
-    return task_t(opid);
-}
-
-template <typename Handler>
-inline task_t task_channel::enqueue(Handler h)
-{
-    return enqueue(h, detail::null_handler_t());
-}
-
-template <typename Handler>
-inline void task_channel::task_handler_proxy(generic_error &e, Handler h)
-{
-    h(e);
-}
-
-template <typename Handler>
-inline void task_channel::completion_handler_proxy(const generic_error &e, Handler h)
-{
-    h(e);
-    enqueue_next_task();
-}
-
 } // namespace mt
 
+#include <impl/task_channel.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
 #include <impl/task_channel.ipp>
 #endif//CPORT_HEADER_ONLY_LIB

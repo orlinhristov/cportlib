@@ -11,6 +11,7 @@
 //
 
 #include <detail/completion_port_impl.hpp>
+#include <cassert>
 #include <limits>
 
 namespace mt {
@@ -44,7 +45,6 @@ bool completion_port_impl::wait_one()
         cond_.wait(lock);
         --wait_one_threads_;
     }
-
     return do_one(lock);
 }
 
@@ -54,39 +54,7 @@ bool completion_port_impl::run_one()
     while (!stopped_ && handlers_.empty()) {
         cond_.wait(lock);
     }
-
     return do_one(lock);
-}
-
-inline bool completion_port_impl::pull_one()
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    return do_one(lock);
-}
-
-inline void completion_port_impl::reset()
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    stopped_ = false;
-}
-
-inline void completion_port_impl::stop()
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    stopped_ = true;
-    cond_.notify_all();
-}
-
-inline bool completion_port_impl::stopped() const
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    return stopped_;
-}
-
-inline std::size_t completion_port_impl::ready_handlers() const
-{
-    std::unique_lock<std::mutex> lock(guard_);
-    return handlers_.size();
 }
 
 std::size_t completion_port_impl::next_operation_id()
@@ -98,7 +66,23 @@ std::size_t completion_port_impl::next_operation_id()
     ++queued_ops_;
     if (seqno_ == std::numeric_limits<std::size_t>::max())
         seqno_ = 0;
+
     return ++seqno_;
+}
+
+void completion_port_impl::post(completion_handler_base *h)
+{
+    std::unique_lock<std::mutex> lock(guard_);
+    handlers_.push(h);
+
+    assert(h->seqno() == 0 || queued_ops_ > 0);
+    if (h->seqno() > 0)
+        --queued_ops_;
+
+    if (queued_ops_ == 0 && wait_one_threads_ > 0)
+        cond_.notify_all();
+    else
+        cond_.notify_one();
 }
 
 bool completion_port_impl::do_one(std::unique_lock<std::mutex> &lock)
@@ -112,6 +96,33 @@ bool completion_port_impl::do_one(std::unique_lock<std::mutex> &lock)
     lock.unlock();
     h->complete();
     return true;
+}
+
+completion_port_impl::priority_less_pred::priority_less_pred()
+    : gap(std::numeric_limits<std::size_t>::max() / 2)
+{
+}
+
+std::size_t completion_port_impl::priority_less_pred::diff(
+    std::size_t s1,
+    std::size_t s2)
+{
+    return s1 > s2 ? s1 - s2 : s2 - s1;
+}
+
+bool completion_port_impl::priority_less_pred::operator()(
+    const completion_handler_base *h1,
+    const completion_handler_base *h2)
+{
+    if (h1->seqno() == 0)
+        return false;
+
+    if (h2->seqno() == 0)
+        return true;
+
+    if (diff(h1->seqno(), h2->seqno()) > gap)
+        return h1->seqno() < h2->seqno();
+    return h1->seqno() > h2->seqno();
 }
 
 } // namespace detail

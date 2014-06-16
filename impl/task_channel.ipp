@@ -21,11 +21,6 @@ task_channel::task_channel(task_scheduler &ts)
 {
 }
 
-inline task_channel::shared_ptr task_channel::make_shared(task_scheduler &ts)
-{
-    return shared_ptr(new task_channel(ts));
-}
-
 bool task_channel::cancel(const task_t &task)
 {
     bool canceled = false;
@@ -80,12 +75,6 @@ std::size_t task_channel::cancel_all()
     count += pending_tasks_.size();
     pending_tasks_.clear();
     return count;
-}
-
-inline std::size_t task_channel::enqueued_tasks() const
-{
-    std::unique_lock<std::mutex> lock(mutex_);
-    return pending_tasks_.size();
 }
 
 void task_channel::enqueue_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock)

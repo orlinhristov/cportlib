@@ -1,7 +1,7 @@
 //
-// simple_example2.cpp
+// async_call_example2.cpp
 //
-// This example demonstrates how to schedule a task for asynhronous execution, providin callback handler
+// This example demonstrates how to schedule a task for asynhronous execution, providing callback handler
 //
 
 #include <completion_port.hpp>

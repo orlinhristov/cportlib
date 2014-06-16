@@ -1,5 +1,5 @@
 //
-// simple_example.cpp
+// async_call_example.cpp
 //
 // This example demonstrates how to schedule a lambda function for asynhronous call.
 // Behaves the same as if bound to a thread:

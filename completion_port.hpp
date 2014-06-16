@@ -11,11 +11,12 @@
 //
 
 #include <config.hpp>
-#include <error_types.hpp>
 #include <detail/completion_port_impl.hpp>
 #include <detail/impl_accessor.hpp>
 
 namespace mt {
+
+class generic_error;
 
 /// Invokes completion handlers on callers threads. 
 class completion_port {
@@ -116,7 +117,7 @@ public:
      *
      * @returns The number of processed handlers.
      */
-    CPORT_DECL_TYPE std::size_t wait();
+    std::size_t wait();
 
     /// Wait for one ready completion handler to be processed.
     /**
@@ -126,7 +127,7 @@ public:
      *
      * @returns true if a handler was processed, otherwise returns false.
      */
-    CPORT_DECL_TYPE bool wait_one();
+    bool wait_one();
 
     /// Run processing of ready completion handlers.
     /**
@@ -134,7 +135,7 @@ public:
      *
      * @returns The number of processed handlers.
      */
-    CPORT_DECL_TYPE std::size_t run();
+    std::size_t run();
 
     /// Run processing of ready completion handlers.
     /**
@@ -143,7 +144,7 @@ public:
      *
      * @returns true if a handler was processed, otherwise will return false.
      */
-    CPORT_DECL_TYPE bool run_one();
+    bool run_one();
 
     /// Run processing of ready completion handlers.
     /**
@@ -152,7 +153,7 @@ public:
      *
      * @returns The number of processed handlers.
      */
-    CPORT_DECL_TYPE std::size_t pull();
+    std::size_t pull();
 
     /// Run processing of one ready completion handlers.
     /**
@@ -161,21 +162,21 @@ public:
      *
      * @returns true if a handlers was processed, otherwise will return false.
      */
-    CPORT_DECL_TYPE bool pull_one();
+    bool pull_one();
 
     /// Interrupt all threads blocked on wait(), wait_one(),
     /// run() and run_one() methods.
-    CPORT_DECL_TYPE void stop();
+    void stop();
 
     /// Test if the port is stopped.
-    CPORT_DECL_TYPE bool stopped() const;
+    bool stopped() const;
 
     /// Reset stopped state of this port.
     /**
      * This method must always be called before call to wait(), wait_one(),
      * run() or run_one() methods if the port was previously stopped.
      */
-    CPORT_DECL_TYPE void reset();
+    void reset();
 
     /// Get the number of ready completion handlers, ready to be called.
     std::size_t ready_handlers() const;
@@ -183,8 +184,8 @@ public:
     /// The implementation type
     typedef detail::completion_port_impl impl_type;
 protected:
-    CPORT_DECL_TYPE const impl_type& impl() const;
-    CPORT_DECL_TYPE impl_type& impl();
+    const impl_type& impl() const;
+    impl_type& impl();
 private:
     template<typename T>
     friend const typename T::impl_type& detail::get_impl(const T&);
@@ -194,44 +195,9 @@ private:
     impl_type impl_;
 };
 
-template <typename Handler>
-inline void completion_port::dispatch(Handler h, const generic_error &e)
-{
-    impl().dispatch(h, e);
-}
-
-template <typename Handler>
-inline void completion_port::dispatch(Handler h)
-{
-    dispatch(h, generic_error());
-}
-
-template <typename Handler>
-inline void completion_port::post(Handler h, const generic_error &e)
-{
-    impl().post(h, impl_.next_operation_id(), e);
-}
-
-template <typename Handler>
-inline void completion_port::post(Handler h)
-{
-    post(h, generic_error());
-}
-
-template <typename Handler>
-inline void completion_port::call(Handler h, const generic_error &e)
-{
-    impl().call(h, e);
-}
-
-template <typename Handler>
-inline void completion_port::call(Handler h)
-{
-    impl().call(h, generic_error());
-}
-
 } // namespace mt
 
+#include <impl/completion_port.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
 #include <impl/completion_port.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
