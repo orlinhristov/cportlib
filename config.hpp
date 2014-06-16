@@ -1,6 +1,6 @@
 #ifndef __CPORT_CONFIG_HPP__
 #define __CPORT_CONFIG_HPP__
-
+ 
 #ifndef CPORT_DECL_TYPE
     #ifdef CPORT_HEADER_ONLY_LIB
         #define CPORT_DECL_TYPE inline
