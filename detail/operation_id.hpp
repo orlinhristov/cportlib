@@ -13,7 +13,7 @@
 #include <cstddef>
 #ifdef CPORT_ENABLE_TASK_STATUS
 #include <cportlib/completion_status.hpp>
-#include <cportlib/detail/event.hpp>
+#include <cportlib/util/event.hpp>
 #include <atomic>
 #include <memory>
 #include <utility>
@@ -31,7 +31,7 @@ public:
         : value_(vt)
 #ifdef CPORT_ENABLE_TASK_STATUS
         , status_(new atomic_status(completion_status::none))
-        , completion_event_(new event())
+        , completion_event_(new util::event())
 #endif
     {
     }
@@ -116,7 +116,7 @@ private:
     typedef std::shared_ptr<atomic_status> shared_atomic_status;
     shared_atomic_status status_;
 
-    typedef std::shared_ptr<event> shared_event;
+    typedef std::shared_ptr<util::event> shared_event;
     shared_event completion_event_;
 #endif
 };

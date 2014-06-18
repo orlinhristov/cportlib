@@ -28,14 +28,11 @@ task_scheduler_impl::task_scheduler_impl(completion_port_impl &port
 
     typedef detail::protected_t<WorkerThreadContext> WorkerThreadContextP;
 
-    threads_.resize(concurrency_hint);
-    for (std::size_t i = 0; i < concurrency_hint; ++i)
-    {
-        threads_[i] = std::thread(std::bind(
+    threads_ = util::thread_group(std::bind(
             &task_scheduler_impl::thread_routine<WorkerThreadContextP>,
             this,
-            WorkerThreadContextP(wtc)));
-    }
+            WorkerThreadContextP(wtc)),
+        concurrency_hint);
 }
 
 template <typename TaskHandler, typename CompletionHandler>
@@ -97,11 +94,7 @@ inline void task_scheduler_impl::stop_threads()
 
 inline void task_scheduler_impl::join_threads()
 {
-    for (std::thread & t : threads_) {
-        if (t.joinable()) {
-            t.join();
-        }
-    }
+    threads_.join();
 }
 
 template <typename WorkerThreadContext>

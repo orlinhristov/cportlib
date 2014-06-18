@@ -14,6 +14,7 @@
 #include <cportlib/error_types.hpp>
 #include <cportlib/task_t.hpp>
 #include <cportlib/detail/task_handler.hpp>
+#include <cportlib/util/thread_group.hpp>
 #include <condition_variable>
 #include <algorithm>
 #include <deque>
@@ -69,7 +70,7 @@ private:
     CPORT_DECL_TYPE void thread_routine_loop();
 
     completion_port_impl &port_;
-    std::vector<std::thread> threads_;
+    util::thread_group threads_;
     mutable std::mutex guard_;
     std::deque<task_handler_base *> pending_tasks_;
     std::condition_variable cond_;
