@@ -4,7 +4,7 @@
 //
 // event.hpp
 //
-// Copyright (c) 2013-2014 Orlin Hristov (orlin dot hristov at gmail dot com)
+// Copyright (c) 2014 Orlin Hristov (orlin dot hristov at gmail dot com)
 //
 // Distributed under the Apache License, Version 2.0
 // visit http://www.apache.org/licenses/ for more information.
@@ -91,7 +91,7 @@ private:
     bool signaled_;
 };
 
-} // namespace detail
+} // namespace util
 
 } // namespace mt
 
