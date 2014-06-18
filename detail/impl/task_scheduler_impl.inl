@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <detail/protected_t.hpp>
+#include <cportlib/detail/protected_t.hpp>
 
 namespace mt {
 

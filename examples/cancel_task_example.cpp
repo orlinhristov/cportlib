@@ -4,8 +4,8 @@
 // This example demonstrates how to cancel specific task before execution of its handler.
 //
 
-#include <completion_port.hpp>
-#include <task_scheduler.hpp>
+#include <cportlib/completion_port.hpp>
+#include <cportlib/task_scheduler.hpp>
 #include <iostream>
 #include <mutex>
 #include <condition_variable>

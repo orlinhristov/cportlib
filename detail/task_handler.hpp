@@ -10,10 +10,10 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <error_types.hpp>
-#include <detail/completion_port_impl.hpp>
-#include <detail/obj_mem_pool.hpp>
-#include <detail/task_handler_base.hpp>
+#include <cportlib/error_types.hpp>
+#include <cportlib/detail/completion_port_impl.hpp>
+#include <cportlib/detail/obj_mem_pool.hpp>
+#include <cportlib/detail/task_handler_base.hpp>
 
 namespace mt {
 

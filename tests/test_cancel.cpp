@@ -1,6 +1,5 @@
-#include "stdafx.h"
-#include <task_scheduler.hpp>
-#include <completion_port.hpp>
+#include <cportlib/task_scheduler.hpp>
+#include <cportlib/completion_port.hpp>
 
 struct test_cancel 
 {

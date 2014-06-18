@@ -10,7 +10,8 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <task_scheduler.hpp>
+#include <cportlib/task_scheduler.hpp>
+#include <cportlib/completion_port.hpp>
 
 namespace mt {
 

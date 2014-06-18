@@ -10,11 +10,29 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <task_channel.hpp>
-#include <task_scheduler.hpp>
+#include <cportlib/task_channel.hpp>
+#include <cportlib/task_scheduler.hpp>
 #include <iterator>
 
 namespace mt {
+
+namespace detail {
+struct find_task_pred {
+	find_task_pred& operator=(const find_task_pred&) = delete;
+
+    explicit find_task_pred(const task_t &t)
+        : task(t)
+    {
+    }
+
+    bool operator() (const detail::task_handler_base *h) const
+    {
+        return task_t(h->id()) == task;
+    }
+
+    const task_t& task;
+};
+}
 
 task_channel::task_channel(task_scheduler &ts)
 : ts_(ts)
@@ -29,7 +47,7 @@ bool task_channel::cancel(const task_t &task)
     if (task == current_task_)
     {
         canceled = std::find_if(canceled_tasks_.begin()
-            , canceled_tasks_.end(), find_task_pred(task)) != canceled_tasks_.end();
+			, canceled_tasks_.end(), detail::find_task_pred(task)) != canceled_tasks_.end();
 
         if (!canceled)
         {
@@ -42,7 +60,7 @@ bool task_channel::cancel(const task_t &task)
 
         // We use iterator here as erase on const_iterator not implemented before g++ v.4.9.0.
         const task_deque::iterator it = std::find_if(pending_tasks_.begin()
-            , pending_tasks_.end(), find_task_pred(task));
+			, pending_tasks_.end(), detail::find_task_pred(task));
 
         if (it != pending_tasks_.end())
         {
@@ -62,7 +80,7 @@ std::size_t task_channel::cancel_all()
     if (current_task_)
     {
         if (std::find_if(canceled_tasks_.begin(), canceled_tasks_.end()
-            , find_task_pred(current_task_)) != canceled_tasks_.end())
+			, detail::find_task_pred(current_task_)) != canceled_tasks_.end())
         {
             ts_.cancel(current_task_);
             ++count;

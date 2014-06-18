@@ -10,8 +10,8 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <error_types.hpp>
-#include <detail/destroyable_obj.hpp>
+#include <cportlib/error_types.hpp>
+#include <cportlib/detail/destroyable_obj.hpp>
 
 namespace mt {
 

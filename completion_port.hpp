@@ -10,9 +10,9 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <config.hpp>
-#include <detail/completion_port_impl.hpp>
-#include <detail/impl_accessor.hpp>
+#include <cportlib/config.hpp>
+#include <cportlib/detail/completion_port_impl.hpp>
+#include <cportlib/detail/impl_accessor.hpp>
 
 namespace mt {
 
@@ -197,9 +197,9 @@ private:
 
 } // namespace mt
 
-#include <impl/completion_port.inl>
+#include <cportlib/impl/completion_port.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <impl/completion_port.ipp>
+#include <cportlib/impl/completion_port.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif//__COMPLETION_PORT_HPP__

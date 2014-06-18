@@ -10,9 +10,9 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <config.hpp>
-#include <task_t.hpp>
-#include <placeholders.hpp>
+#include <cportlib/config.hpp>
+#include <cportlib/task_t.hpp>
+#include <cportlib/placeholders.hpp>
 #include <deque>
 #include <mutex>
 #include <memory>
@@ -24,6 +24,9 @@ class task_handler_base;
 }
 
 class task_scheduler;
+
+class generic_error;
+
 /// This class is a task_scheduler wrapper that guarantees sequential execution of tasks
 class task_channel : public std::enable_shared_from_this<task_channel> {
 
@@ -88,21 +91,6 @@ public:
     /// Tasks that are currently executing are not included.
     std::size_t enqueued_tasks() const;
 private:
-    struct find_task_pred {
-        find_task_pred& operator=(const find_task_pred&) = delete;
-
-        explicit find_task_pred(const task_t &t)
-            : task(t)
-        {
-        }
-
-        bool operator() (const detail::task_handler_base *h) const
-        {
-            return task_t(h->id()) == task;
-        }
-
-        const task_t& task;
-    };
 
     CPORT_DECL_TYPE void enqueue_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock);
 
@@ -126,9 +114,9 @@ private:
 
 } // namespace mt
 
-#include <impl/task_channel.inl>
+#include <cportlib/impl/task_channel.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <impl/task_channel.ipp>
+#include <cportlib/impl/task_channel.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif //__TASK_CHANNEL_HPP__

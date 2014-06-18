@@ -5,8 +5,8 @@
 //
 
 #define CPORT_ENABLE_TASK_STATUS
-#include <completion_port.hpp>
-#include <task_scheduler.hpp>
+#include <cportlib/completion_port.hpp>
+#include <cportlib/task_scheduler.hpp>
 #include <iostream>
 
 int main()

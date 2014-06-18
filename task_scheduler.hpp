@@ -10,10 +10,10 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <config.hpp>
-#include <task_t.hpp>
-#include <detail/task_scheduler_impl.hpp>
-#include <detail/impl_accessor.hpp>
+#include <cportlib/config.hpp>
+#include <cportlib/task_t.hpp>
+#include <cportlib/detail/task_scheduler_impl.hpp>
+#include <cportlib/detail/impl_accessor.hpp>
 
 namespace mt {
 
@@ -135,9 +135,9 @@ private:
 
 } // namespace mt
 
-#include <impl/task_scheduler.inl>
+#include <cportlib/impl/task_scheduler.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <impl/task_scheduler.ipp>
+#include <cportlib/impl/task_scheduler.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif//__TASK_SCHEDULER_HPP__

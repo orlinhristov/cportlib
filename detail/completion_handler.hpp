@@ -10,8 +10,8 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <detail/completion_handler_base.hpp>
-#include <detail/obj_mem_pool.hpp>
+#include <cportlib/detail/completion_handler_base.hpp>
+#include <cportlib/detail/obj_mem_pool.hpp>
 #include <cassert>
 
 namespace mt {

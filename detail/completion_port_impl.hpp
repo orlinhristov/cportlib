@@ -10,8 +10,8 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <config.hpp>
-#include <detail/completion_handler_base.hpp>
+#include <cportlib/config.hpp>
+#include <cportlib/detail/completion_handler_base.hpp>
 #include <condition_variable>
 #include <memory>
 #include <queue>
@@ -87,9 +87,9 @@ private:
 
 } // namespace mt
 
-#include <detail/impl/completion_port_impl.inl>
+#include <cportlib/detail/impl/completion_port_impl.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <detail/impl/completion_port_impl.ipp>
+#include <cportlib/detail/impl/completion_port_impl.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif // __COMPLETION_PORT_IMPL_HPP__

@@ -10,10 +10,10 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <task_channel.hpp>
-#include <task_scheduler.hpp>
-#include <detail/impl_accessor.hpp>
-#include <detail/task_handler_base.hpp>
+#include <cportlib/task_channel.hpp>
+#include <cportlib/task_scheduler.hpp>
+#include <cportlib/detail/impl_accessor.hpp>
+#include <cportlib/detail/task_handler_base.hpp>
 #include <iterator>
 
 namespace mt {
