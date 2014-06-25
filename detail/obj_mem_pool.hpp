@@ -13,7 +13,7 @@
 #include <deque>
 #include <mutex>
 #include <cassert>
-
+#ifndef CPORT_DISABLE_OBJ_MEMORY_POOL
 #define DECLARE_OBJ_MEMORY_POOL(ClassType) \
     private: \
         class ClassType##Pool : private std::deque<void *> \
@@ -68,5 +68,11 @@
 #define IMPLEMENT_OBJ_MEMORY_POOL_T2(Class, T1, T2) \
     template <typename T1, typename T2> \
     typename Class<T1, T2>::Class##Pool Class<T1, T2>::mem_pool_
+#else // CPORT_DISABLE_OBJ_MEMORY_POOL
+#define DECLARE_OBJ_MEMORY_POOL(ClassType)
+#define IMPLEMENT_OBJ_MEMORY_POOL(Class)
+#define IMPLEMENT_OBJ_MEMORY_POOL_T1(Class, T)
+#define IMPLEMENT_OBJ_MEMORY_POOL_T2(Class, T1, T2)
+#endif // CPORT_DISABLE_OBJ_MEMORY_POOL
 
 #endif //__OBJ_MEMORY_POOL_HPP__
