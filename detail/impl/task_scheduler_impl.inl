@@ -36,13 +36,13 @@ task_scheduler_impl::task_scheduler_impl(completion_port_impl &port
 }
 
 template <typename TaskHandler, typename CompletionHandler>
-inline task_t task_scheduler_impl::async(TaskHandler th, CompletionHandler ch)
+inline task_t task_scheduler_impl::async(TaskHandler&& th, CompletionHandler&& ch)
 {
-    typedef task_handler<TaskHandler, CompletionHandler> Wrapper;
     const operation_id id = port_.next_operation_id();
     if (id.valid())
     {
-        enqueue_task(Wrapper::construct(th, ch, id));
+        enqueue_task(create_task_handler(std::forward<TaskHandler>(th),
+            std::forward<CompletionHandler>(ch), id));
     }
     return task_t(id);
 }

@@ -42,7 +42,7 @@ public:
     CPORT_DECL_TYPE ~task_scheduler_impl();
 
     template <typename TaskHandler, typename CompletionHandler>
-    task_t async(TaskHandler th, CompletionHandler ch);
+    task_t async(TaskHandler&& th, CompletionHandler&& ch);
 
     CPORT_DECL_TYPE bool cancel(const task_t &task);
 

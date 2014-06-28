@@ -84,7 +84,7 @@ public:
      * @returns A task identifier
      */
     template <typename TaskHandler, typename CompletionHandler>
-    task_t async(TaskHandler th, CompletionHandler ch);
+    task_t async(TaskHandler&& th, CompletionHandler&& ch);
 
     /// Schedule a task for an asynchronous execution
     /**
@@ -94,7 +94,7 @@ public:
      * @returns A task identifier
      */
     template <typename Handler>
-    task_t async(Handler h);
+    task_t async(Handler&& h);
 
     /// Cancel specific task.
     /**

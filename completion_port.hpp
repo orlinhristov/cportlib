@@ -50,7 +50,7 @@ public:
     * @param e An error to be passed when the handler is invoked.
     */
     template <typename Handler>
-    void dispatch(Handler h, const generic_error &e);
+    void dispatch(Handler&& h, const generic_error& e);
 
     /// Dispatch a completion handler.
     /**
@@ -64,7 +64,7 @@ public:
     *
     */
     template <typename Handler>
-    void dispatch(Handler h);
+    void dispatch(Handler&& h);
     
     /// Post a completion handler.
     /**
@@ -77,7 +77,7 @@ public:
      * @param e An error to be passed when the handler is invoked.
      */
     template <typename Handler>
-    void post(Handler h, const generic_error &e);
+    void post(Handler&& h, const generic_error& e);
 
     /// Post a completion handler.
     /**
@@ -88,7 +88,7 @@ public:
      * @param h The completion handler to be invoked.
      */
     template <typename Handler>
-    void post(Handler h);
+    void post(Handler&& h);
 
     /// Call a completion handler.
     /**
@@ -99,7 +99,7 @@ public:
     * @param e An error to be passed when the handler is invoked.
     */
     template <typename Handler>
-    void call(Handler h, const generic_error &e);
+    void call(Handler&& h, const generic_error& e);
 
     /// Call a completion handler.
     /**
@@ -108,7 +108,7 @@ public:
     * @param h The completion handler to be invoked.
     */
     template <typename Handler>
-    void call(Handler h);
+    void call(Handler&& h);
 
     /// Wait until all enqueued operations are processed.
     /**

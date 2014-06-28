@@ -15,39 +15,39 @@
 namespace mt {
 
 template <typename Handler>
-inline void completion_port::dispatch(Handler h, const generic_error &e)
+inline void completion_port::dispatch(Handler&& h, const generic_error& e)
 {
-    impl().dispatch(h, e);
+    impl().dispatch(std::forward<Handler>(h), e);
 }
 
 template <typename Handler>
-inline void completion_port::dispatch(Handler h)
+inline void completion_port::dispatch(Handler&& h)
 {
     dispatch(h, generic_error());
 }
 
 template <typename Handler>
-inline void completion_port::post(Handler h, const generic_error &e)
+inline void completion_port::post(Handler&& h, const generic_error& e)
 {
-    impl().post(h, impl_.next_operation_id(), e);
+    impl().post(std::forward<Handler>(h), impl_.next_operation_id(), e);
 }
 
 template <typename Handler>
-inline void completion_port::post(Handler h)
+inline void completion_port::post(Handler&& h)
 {
-    post(h, generic_error());
+    post(std::forward<Handler>(h), generic_error());
 }
 
 template <typename Handler>
-inline void completion_port::call(Handler h, const generic_error &e)
+inline void completion_port::call(Handler&& h, const generic_error& e)
 {
-    impl().call(h, e);
+    impl().call(std::forward<Handler>(h), e);
 }
 
 template <typename Handler>
-inline void completion_port::call(Handler h)
+inline void completion_port::call(Handler&& h)
 {
-    impl().call(h, generic_error());
+    impl().call(std::forward<Handler>(h), generic_error());
 }
 
 inline std::size_t completion_port::wait()

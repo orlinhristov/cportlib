@@ -38,15 +38,15 @@ inline task_scheduler::task_scheduler(completion_port &port,
 }
 
 template <typename TaskHandler, typename CompletionHandler>
-inline task_t task_scheduler::async(TaskHandler th, CompletionHandler ch)
+inline task_t task_scheduler::async(TaskHandler&& th, CompletionHandler&& ch)
 {
-    return impl().async(th, ch);
+    return impl().async(std::forward<TaskHandler>(th), std::forward<CompletionHandler>(ch));
 }
 
 template <typename Handler>
-inline task_t task_scheduler::async(Handler h)
+inline task_t task_scheduler::async(Handler&& h)
 {
-    return async(h, detail::null_handler_t());
+    return async(std::forward<Handler>(h), detail::null_handler_t());
 }
 
 inline bool task_scheduler::cancel(const task_t &task)

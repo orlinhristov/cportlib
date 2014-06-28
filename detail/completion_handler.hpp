@@ -22,10 +22,24 @@ template <typename Handler>
 class completion_handler : public completion_handler_base {
     DECLARE_OBJ_MEMORY_POOL(completion_handler)
 public:
-    static completion_handler* construct(Handler h,
-        std::size_t seqno, const generic_error &e)
+    completion_handler(const Handler& handler, std::size_t seqno,
+        const generic_error& e)
+        : completion_handler_base(&completion_handler::invoke_,
+            &completion_handler::destroy_, seqno, e)
+        , handler_(handler)
     {
-        return new completion_handler(h, seqno, e);
+    }
+
+    completion_handler(Handler&& handler, std::size_t seqno,
+        const generic_error& e)
+        : completion_handler_base(&completion_handler::invoke_,
+            &completion_handler::destroy_, seqno, e)
+        , handler_(std::move(handler))
+    {
+    }
+
+    ~completion_handler()
+    {
     }
 
     void invoke(const generic_error &e)
@@ -34,18 +48,6 @@ public:
     }
 
 private:
-    completion_handler(Handler handler, std::size_t seqno,
-        const generic_error &e)
-        : completion_handler_base(&completion_handler::invoke_,
-            &completion_handler::destroy_, seqno, e)
-        , handler_(handler)
-    {
-    }
-
-    ~completion_handler()
-    {
-    }
-
     typedef completion_handler<Handler> this_type;
 
     static void destroy_(destroyable_obj *base)
@@ -63,6 +65,14 @@ private:
 
     Handler handler_;
 };
+
+template <typename Handler>
+inline completion_handler<typename std::remove_reference<Handler>::type>* 
+create_completion_handler(Handler&& h, std::size_t seq, const generic_error& e)
+{
+    return new completion_handler<std::remove_reference<Handler>::type>(
+        std::forward<Handler>(h), seq, e);
+}
 
 IMPLEMENT_OBJ_MEMORY_POOL_T1(completion_handler, H);
 

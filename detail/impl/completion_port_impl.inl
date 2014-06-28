@@ -18,19 +18,19 @@ namespace mt {
 namespace detail {
 
 template <typename Handler>
-inline void completion_port_impl::post(Handler h, std::size_t seqno, const generic_error &e)
+inline void completion_port_impl::post(Handler&& h, std::size_t seqno, const generic_error& e)
 {
-    post(completion_handler<Handler>::construct(h, seqno, e));
+    post(create_completion_handler(std::forward<Handler>(h), seqno, e));
 }
 
 template <typename Handler>
-inline void completion_port_impl::dispatch(Handler h, const generic_error &e)
+inline void completion_port_impl::dispatch(Handler&& h, const generic_error& e)
 {
-    post(h, 0, e);
+    post(std::forward<Handler>(h), 0, e);
 }
 
 template <typename Handler>
-inline void completion_port_impl::call(Handler h, const generic_error &e)
+inline void completion_port_impl::call(Handler&& h, const generic_error& e)
 {
     h(e);
 }

@@ -19,8 +19,13 @@ namespace detail {
 /// Protect a bind function object from evaluation
 template <typename F>
 struct protected_t {
-    explicit protected_t(F f) 
+    explicit protected_t(const F& f) 
         : f_(f)
+    {
+    }
+
+    explicit protected_t(F&& f)
+        : f_(std::move(f))
     {
     }
 
@@ -35,9 +40,9 @@ private:
 };
 
 template <typename F>
-protected_t<F> protect(F f)
+protected_t<F> protect(F&& f)
 {
-    return protected_t<F>(f);
+    return protected_t<F>(std::forward<F>(f));
 }
 
 } // namespace mt

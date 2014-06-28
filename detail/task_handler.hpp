@@ -23,11 +23,28 @@ template <typename TaskHandlerType, typename CompletionHandlerType>
 class task_handler : public task_handler_base {
     DECLARE_OBJ_MEMORY_POOL(task_handler)
 public:
-    static task_handler* construct(TaskHandlerType op,
-                                   CompletionHandlerType c,
-                                   operation_id id)
+    task_handler(const TaskHandlerType& op, const CompletionHandlerType& c, const operation_id& id)
+        : task_handler_base(id,
+            task_handler::execute_,
+            task_handler::post_complete_,
+            task_handler::destroy_)
+        , taskHandler_(op)
+        , completionHandler_(c)
     {
-        return new task_handler(op, c, id);
+    }
+
+    task_handler(TaskHandlerType&& op, CompletionHandlerType&& c, const operation_id& id)
+        : task_handler_base(id,
+            task_handler::execute_,
+            task_handler::post_complete_,
+            task_handler::destroy_)
+        , taskHandler_(std::move(op))
+        , completionHandler_(std::move(c))
+    {
+    }
+
+    ~task_handler()
+    {
     }
 
     template <typename CompletionPort>
@@ -43,22 +60,8 @@ public:
     {
         port.post(completionHandler_, id(), e);
     }
-
+   
 private:
-    task_handler(TaskHandlerType op, CompletionHandlerType c, operation_id id)
-        : task_handler_base(id,
-            task_handler::execute_,
-            task_handler::post_complete_,
-            task_handler::destroy_)
-        , taskHandler_(op)
-        , completionHandler_(c)
-    {
-    }
-    
-    ~task_handler()
-    {
-    }
-
     typedef task_handler<TaskHandlerType, CompletionHandlerType> this_type;
 
     static void destroy_(destroyable_obj *base)
@@ -85,6 +88,20 @@ private:
 };
 
 IMPLEMENT_OBJ_MEMORY_POOL_T2(task_handler, TH, CH);
+
+template <typename TaskHandlerType, typename CompletionHandlerType>
+inline task_handler<typename std::remove_reference<TaskHandlerType>::type,
+    typename std::remove_reference<CompletionHandlerType>::type>*
+create_task_handler(TaskHandlerType&& th, CompletionHandlerType&& ch, const operation_id& id)
+{
+    return new task_handler<std::remove_reference<TaskHandlerType>::type,
+        std::remove_reference<CompletionHandlerType>::type>(
+            std::forward<TaskHandlerType>(th),
+            std::forward<CompletionHandlerType>(ch),
+            id);
+}
+
+
 
 } // namespace detail
 

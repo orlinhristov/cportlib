@@ -17,7 +17,9 @@
 namespace mt {
 
 namespace detail {
+
 struct find_task_pred {
+
 	find_task_pred& operator=(const find_task_pred&) = delete;
 
     explicit find_task_pred(const task_t &t)
@@ -32,7 +34,8 @@ struct find_task_pred {
 
     const task_t& task;
 };
-}
+
+} // namespace detail
 
 task_channel::task_channel(task_scheduler &ts)
 : ts_(ts)
@@ -44,6 +47,7 @@ bool task_channel::cancel(const task_t &task)
     bool canceled = false;
 
     std::unique_lock<std::mutex> lock(mutex_);
+
     if (task == current_task_)
     {
         canceled = std::find_if(canceled_tasks_.begin()
@@ -77,6 +81,7 @@ std::size_t task_channel::cancel_all()
     std::size_t count = 0;
 
     std::unique_lock<std::mutex> lock(mutex_);
+
     if (current_task_)
     {
         if (std::find_if(canceled_tasks_.begin(), canceled_tasks_.end()

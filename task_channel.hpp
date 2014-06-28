@@ -41,10 +41,10 @@ public:
 
     task_channel& operator=(const task_channel&) = delete;
 
-    /// Enqueue a task for an asynchronous execution
+    /// Add a task before the current first task.
     /**
-    * The completion handler is posted to the completion port after task
-    * execution completes
+    * The completion handler is posted to the completion port
+    * after task execution completes.
     *
     * @param th A task handler to be executed asynchronously.
     *
@@ -54,9 +54,24 @@ public:
     * @returns A task identifier
     */
     template <typename TaskHandler, typename CompletionHandler>
-    task_t enqueue(TaskHandler th, CompletionHandler ch);
+    task_t enqueue_front(TaskHandler&& th, CompletionHandler&& ch);
 
-    /// Enqueue a task for an asynchronous execution
+    /// Add a task after the current last task.
+    /**
+    * The completion handler is posted to the completion port
+    * after task execution completes.
+    *
+    * @param th A task handler to be executed asynchronously.
+    *
+    * @param ch A completion handler to be posted to the completion port
+    *  after task execution completes
+    *
+    * @returns A task identifier
+    */
+    template <typename TaskHandler, typename CompletionHandler>
+    task_t enqueue_back(TaskHandler&& th, CompletionHandler&& ch);
+
+    /// Add a task before the current first task.
     /**
     *
     * @param h A task handler to be executed asynchronously.
@@ -64,7 +79,17 @@ public:
     * @returns A task identifier
     */
     template <typename Handler>
-    task_t enqueue(Handler h);
+    task_t enqueue_front(Handler&& h);
+
+    /// Add a task after the current last task.
+    /**
+    *
+    * @param h A task handler to be executed asynchronously.
+    *
+    * @returns A task identifier
+    */
+    template <typename Handler>
+    task_t enqueue_back(Handler&& h);
 
     /// Cancel specific task.
     /**
@@ -91,6 +116,9 @@ public:
     /// Tasks that are currently executing are not included.
     std::size_t enqueued_tasks() const;
 private:
+
+    template <typename TaskHandler, typename CompletionHandler, typename InsertIterator>
+    task_t enqueue_task(TaskHandler&& th, CompletionHandler&& ch, InsertIterator& it);
 
     CPORT_DECL_TYPE void enqueue_task(detail::task_handler_base *h, std::unique_lock<std::mutex> &lock);
 

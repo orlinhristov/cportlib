@@ -28,13 +28,13 @@ public:
     CPORT_DECL_TYPE ~completion_port_impl();
 
     template <typename Handler>
-    void dispatch(Handler h, const generic_error &e);
+    void dispatch(Handler&& h, const generic_error& e);
 
     template <typename Handler>
-    void post(Handler h, std::size_t seqno, const generic_error &e);
+    void post(Handler&& h, std::size_t seqno, const generic_error& e);
 
     template <typename Handler>
-    void call(Handler h, const generic_error &e);
+    void call(Handler&& h, const generic_error& e);
 
     CPORT_DECL_TYPE bool wait_one();
 
