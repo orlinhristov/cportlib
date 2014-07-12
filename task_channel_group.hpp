@@ -11,8 +11,8 @@
 //
 
 #include <cportlib/task_channel.hpp>
-#include <map>
 #include <mutex>
+#include <unordered_map>
 
 namespace mt {
 
@@ -43,7 +43,7 @@ public:
 
 private:
     task_scheduler& ts_;
-    std::map<key_type, task_channel::shared_ptr> groups_;
+    std::unordered_map<key_type, task_channel::shared_ptr> groups_;
     std::mutex mtx_;
 };
 
