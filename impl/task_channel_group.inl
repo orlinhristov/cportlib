@@ -66,9 +66,21 @@ inline std::size_t task_channel_group<Key>::enqueued_tasks(const key_type& key) 
 }
 
 template <typename Key>
-inline bool task_channel_group<Key>::erase(const key_type& key)
+inline task_channel::shared_ptr task_channel_group<Key>::erase(const key_type& key)
 {
-    return groups_.erase(key) > 0;
+    task_channel::shared_ptr channel;
+
+    auto i = groups_.find(key);
+
+    if (i != groups_.end())
+    {
+        channel.swap(i->second);
+
+        groups_.erase(i);
+    }
+
+    return channel;
+    //return groups_.erase(key) > 0;
 }
 
 } // namespace mt

@@ -38,7 +38,7 @@ public:
 
     std::size_t enqueued_tasks(const key_type& key) const;
 
-    bool erase(const key_type& key);
+    task_channel::shared_ptr erase(const key_type& key);
 
 private:
     task_scheduler& ts_;
