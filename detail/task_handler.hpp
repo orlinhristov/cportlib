@@ -89,19 +89,17 @@ private:
 
 IMPLEMENT_OBJ_MEMORY_POOL_T2(task_handler, TH, CH);
 
-template <typename TaskHandlerType, typename CompletionHandlerType>
-inline task_handler<typename std::remove_reference<TaskHandlerType>::type,
-    typename std::remove_reference<CompletionHandlerType>::type>*
-create_task_handler(TaskHandlerType&& th, CompletionHandlerType&& ch, const operation_id& id)
+template <typename taskhandlertype, typename completionhandlertype>
+inline task_handler<typename std::remove_reference<taskhandlertype>::type,
+    typename std::remove_reference<completionhandlertype>::type>*
+create_task_handler(taskhandlertype&& th, completionhandlertype&& ch, const operation_id& id)
 {
-    return new task_handler<std::remove_reference<TaskHandlerType>::type,
-        std::remove_reference<CompletionHandlerType>::type>(
-            std::forward<TaskHandlerType>(th),
-            std::forward<CompletionHandlerType>(ch),
+    return new task_handler<typename std::remove_reference<taskhandlertype>::type,
+        typename std::remove_reference<completionhandlertype>::type>(
+            std::forward<taskhandlertype>(th),
+            std::forward<completionhandlertype>(ch),
             id);
 }
-
-
 
 } // namespace detail
 

@@ -70,9 +70,16 @@ template <typename Handler>
 inline completion_handler<typename std::remove_reference<Handler>::type>* 
 create_completion_handler(Handler&& h, std::size_t seq, const generic_error& e)
 {
-    return new completion_handler<std::remove_reference<Handler>::type>(
-        std::forward<Handler>(h), seq, e);
+    return new completion_handler<typename std::remove_reference<Handler>::type>(
+        std::forward<typename std::remove_reference<Handler>::type>(h), seq, e);
 }
+
+//template <typename Handler>
+//inline completion_handler<Handler>*
+//create_completion_handler(Handler&& h, std::size_t seq, const generic_error& e)
+//{
+//    return new completion_handler<Handler>(std::forward<Handler>(h), seq, e);
+//}
 
 IMPLEMENT_OBJ_MEMORY_POOL_T1(completion_handler, H);
 

@@ -14,6 +14,7 @@
 #include <cportlib/task_t.hpp>
 #include <cportlib/detail/task_scheduler_impl.hpp>
 #include <cportlib/detail/impl_accessor.hpp>
+#include <type_traits>
 
 namespace mt {
 

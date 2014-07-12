@@ -15,6 +15,7 @@
 #include <cportlib/task_t.hpp>
 #include <cportlib/detail/task_handler.hpp>
 #include <cportlib/util/thread_group.hpp>
+#include <type_traits>
 #include <condition_variable>
 #include <algorithm>
 #include <deque>
