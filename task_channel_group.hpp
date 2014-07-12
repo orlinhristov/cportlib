@@ -12,6 +12,7 @@
 
 #include <cportlib/task_channel.hpp>
 #include <map>
+#include <mutex>
 
 namespace mt {
 
@@ -43,6 +44,7 @@ public:
 private:
     task_scheduler& ts_;
     std::map<key_type, task_channel::shared_ptr> groups_;
+    std::mutex mtx_;
 };
 
 } // namespace mt

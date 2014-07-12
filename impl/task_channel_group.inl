@@ -49,6 +49,8 @@ inline task_t task_channel_group<Key>::enqueue_back(const key_type& key, TaskHan
 template <typename Key>
 inline task_channel::shared_ptr task_channel_group<Key>::get_channel(const key_type &key)
 {
+    std::unique_lock<std::mutex> lock(mtx_);
+
     auto i = groups_.find(key);
 
     if (i == groups_.end())
@@ -70,6 +72,8 @@ inline task_channel::shared_ptr task_channel_group<Key>::erase(const key_type& k
 {
     task_channel::shared_ptr channel;
 
+    std::unique_lock<std::mutex> lock(mtx_);
+
     auto i = groups_.find(key);
 
     if (i != groups_.end())
@@ -80,7 +84,6 @@ inline task_channel::shared_ptr task_channel_group<Key>::erase(const key_type& k
     }
 
     return channel;
-    //return groups_.erase(key) > 0;
 }
 
 } // namespace mt
