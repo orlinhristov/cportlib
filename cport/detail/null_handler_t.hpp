@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-namespace mt {
+namespace cport {
 
 class generic_error;
 
@@ -28,6 +28,6 @@ struct null_handler_t
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif

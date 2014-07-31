@@ -15,7 +15,7 @@
 #include <cport/detail/obj_mem_pool.hpp>
 #include <cport/detail/task_handler_base.hpp>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -103,6 +103,6 @@ create_task_handler(taskhandlertype&& th, completionhandlertype&& ch, const oper
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __TASK_HANDLER_HPP__

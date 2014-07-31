@@ -14,7 +14,7 @@
 #include <cport/task_scheduler.hpp>
 #include <iterator>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -140,6 +140,6 @@ void task_channel::enqueue_next_task()
     current_task_ = task_t();
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif // __TASK_CHANNEL_IPP__

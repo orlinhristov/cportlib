@@ -17,7 +17,7 @@
 #include <type_traits>
 #include <iterator>
 
-namespace mt {
+namespace cport {
 
 inline task_channel::shared_ptr task_channel::make_shared(task_scheduler &ts)
 {
@@ -99,6 +99,6 @@ inline void task_channel::completion_handler_proxy(const generic_error &e, Handl
     enqueue_next_task();
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif // __TASK_CHANNEL_INL__

@@ -12,7 +12,7 @@
 
 #include <functional>
 
-namespace mt {
+namespace cport {
 namespace detail {
 
 class destroyable_obj {
@@ -48,6 +48,6 @@ struct destroyable_deletor
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __DESTROYABLE_OBJ_H__

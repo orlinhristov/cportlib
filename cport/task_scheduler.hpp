@@ -16,7 +16,7 @@
 #include <cport/detail/impl_accessor.hpp>
 #include <type_traits>
 
-namespace mt {
+namespace cport {
 
 class completion_port;
 
@@ -134,7 +134,7 @@ private:
     impl_type impl_;
 };
 
-} // namespace mt
+} // namespace cport
 
 #include <cport/impl/task_scheduler.inl>
 #ifdef CPORT_HEADER_ONLY_LIB

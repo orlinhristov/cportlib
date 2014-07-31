@@ -17,7 +17,7 @@
 #include <mutex>
 #include <memory>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 class task_handler_base;
@@ -140,7 +140,7 @@ private:
     task_scheduler &ts_;
 };
 
-} // namespace mt
+} // namespace cport
 
 #include <cport/impl/task_channel.inl>
 #ifdef CPORT_HEADER_ONLY_LIB

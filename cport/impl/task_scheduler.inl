@@ -12,7 +12,7 @@
 
 #include <cport/detail/null_handler_t.hpp>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -74,6 +74,6 @@ inline task_scheduler::impl_type& task_scheduler::impl()
     return impl_;
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif //__TASK_SCHEDULER_INL__

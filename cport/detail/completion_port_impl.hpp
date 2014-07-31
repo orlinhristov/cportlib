@@ -16,7 +16,7 @@
 #include <memory>
 #include <queue>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -85,7 +85,7 @@ private:
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #include <cport/detail/impl/completion_port_impl.inl>
 #ifdef CPORT_HEADER_ONLY_LIB

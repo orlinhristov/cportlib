@@ -13,7 +13,7 @@
 #include <cport/detail/destroyable_obj.hpp>
 #include <cport/detail/operation_id.hpp>
 
-namespace mt {
+namespace cport {
 
 class generic_error;
 
@@ -68,6 +68,6 @@ private:
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __TASK_HANDLER_BASE_HPP__

@@ -13,7 +13,7 @@
 #include <cport/error_types.hpp>
 #include <cport/detail/destroyable_obj.hpp>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -56,6 +56,6 @@ private:
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __COMPLETION_HANDLER_BASE_HPP__

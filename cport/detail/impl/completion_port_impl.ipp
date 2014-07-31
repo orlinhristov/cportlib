@@ -14,7 +14,7 @@
 #include <cassert>
 #include <limits>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -127,6 +127,6 @@ bool completion_port_impl::priority_less_pred::operator()(
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __COMPLETION_PORT_IMPL_IPP__

@@ -14,7 +14,7 @@
 #include <cport/detail/completion_port_impl.hpp>
 #include <cport/detail/impl_accessor.hpp>
 
-namespace mt {
+namespace cport {
 
 class generic_error;
 
@@ -195,7 +195,7 @@ private:
     impl_type impl_;
 };
 
-} // namespace mt
+} // namespace cport
 
 #include <cport/impl/completion_port.inl>
 #ifdef CPORT_HEADER_ONLY_LIB

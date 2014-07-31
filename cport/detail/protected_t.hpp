@@ -12,7 +12,7 @@
 
 #include <utility>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -45,7 +45,7 @@ protected_t<F> protect(F&& f)
     return protected_t<F>(std::forward<F>(f));
 }
 
-} // namespace mt
+} // namespace cport
 
 } // namespace detail
 

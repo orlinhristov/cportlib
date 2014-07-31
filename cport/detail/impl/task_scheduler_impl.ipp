@@ -13,7 +13,7 @@
 #include <cport/detail/task_scheduler_impl.hpp>
 #include <algorithm>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -85,6 +85,6 @@ void task_scheduler_impl::thread_routine_loop()
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif //__TASK_SCHEDULER_IMPL_IPP__

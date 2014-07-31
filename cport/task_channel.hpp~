@@ -10,14 +10,14 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <cportlib/config.hpp>
-#include <cportlib/task_t.hpp>
-#include <cportlib/placeholders.hpp>
+#include <cport/config.hpp>
+#include <cport/task_t.hpp>
+#include <cport/placeholders.hpp>
 #include <deque>
 #include <mutex>
 #include <memory>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 class task_handler_base;
@@ -140,11 +140,11 @@ private:
     task_scheduler &ts_;
 };
 
-} // namespace mt
+} // namespace cport
 
-#include <cportlib/impl/task_channel.inl>
+#include <cport/impl/task_channel.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <cportlib/impl/task_channel.ipp>
+#include <cport/impl/task_channel.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif //__TASK_CHANNEL_HPP__

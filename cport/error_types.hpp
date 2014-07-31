@@ -12,7 +12,7 @@
 
 #include <stdexcept>
 
-namespace mt {
+namespace cport {
 
 class generic_error : public std::runtime_error {
 public:
@@ -49,6 +49,6 @@ struct operation_aborted_error : generic_error {
     }
 };
 
-} // namespace mt
+} // namespace cport
 
 #endif // __ERROR_TYPES_HPP__

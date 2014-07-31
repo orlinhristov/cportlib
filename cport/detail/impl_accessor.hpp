@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-namespace mt {
+namespace cport {
 namespace detail {
     template <typename T>
     inline const typename T::impl_type& get_impl(const T &t)

@@ -17,7 +17,7 @@
 #include <thread>
 #include <utility>
 
-namespace mt {
+namespace cport {
 
 namespace util {
 
@@ -93,6 +93,6 @@ private:
 
 } // namespace util
 
-} // namespace mt
+} // namespace cport
 
 #endif //__CPORT_EVENT_HPP__

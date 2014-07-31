@@ -13,13 +13,13 @@
 #include <cport/task_scheduler.hpp>
 #include <cport/completion_port.hpp>
 
-namespace mt {
+namespace cport {
 
 task_scheduler::task_scheduler(completion_port &port, std::size_t concurrency_hint)
     : impl_(detail::get_impl(port), concurrency_hint, detail::default_context)
 {
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif //__TASK_SCHEDULER_IPP__

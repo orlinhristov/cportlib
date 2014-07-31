@@ -12,7 +12,7 @@
 
 #include <cport/completion_port.hpp>
 
-namespace mt {
+namespace cport {
 
 completion_port::completion_port()
 {
@@ -22,6 +22,6 @@ completion_port::~completion_port()
 {
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif//__COMPLETION_PORT_IPP__

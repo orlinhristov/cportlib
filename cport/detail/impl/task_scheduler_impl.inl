@@ -12,7 +12,7 @@
 
 #include <cport/detail/protected_t.hpp>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -105,6 +105,6 @@ inline void task_scheduler_impl::thread_routine(WorkerThreadContext wtc)
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif //__TASK_SCHEDULER_IMPL_INL__

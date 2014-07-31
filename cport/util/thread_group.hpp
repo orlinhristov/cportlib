@@ -15,7 +15,7 @@
 #include <vector>
 #include <utility>
 
-namespace mt {
+namespace cport {
 
 namespace util {
 
@@ -89,7 +89,7 @@ private:
 
 } // namespace util
 
-} // namespace mt
+} // namespace cport
 
 #endif //__THREAD_GROUP_HPP__
 

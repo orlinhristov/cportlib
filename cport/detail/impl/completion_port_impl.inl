@@ -13,7 +13,7 @@
 #include <cport/detail/completion_handler.hpp>
 #include <cassert>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -68,6 +68,6 @@ inline std::size_t completion_port_impl::ready_handlers() const
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __COMPLETION_PORT_IMPL_INL__

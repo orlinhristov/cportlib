@@ -10,11 +10,11 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <cportlib/task_channel.hpp>
+#include <cport/task_channel.hpp>
 #include <mutex>
 #include <unordered_map>
 
-namespace mt {
+namespace cport {
 
 template <typename Key>
 class task_channel_group {
@@ -47,8 +47,8 @@ private:
     std::mutex mtx_;
 };
 
-} // namespace mt
+} // namespace cport
 
-#include <cportlib/impl/task_channel_group.inl>
+#include <cport/impl/task_channel_group.inl>
 
 #endif //__TASK_CHANNEL_GROUP_HPP__

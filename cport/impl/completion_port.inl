@@ -12,7 +12,7 @@
 
 #include <cport/error_types.hpp>
 
-namespace mt {
+namespace cport {
 
 template <typename Handler>
 inline void completion_port::dispatch(Handler&& h, const generic_error& e)
@@ -128,6 +128,6 @@ inline completion_port::impl_type& completion_port::impl()
     return impl_;
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif//__COMPLETION_PORT_INL__

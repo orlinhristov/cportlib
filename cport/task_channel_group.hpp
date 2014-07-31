@@ -14,7 +14,7 @@
 #include <mutex>
 #include <unordered_map>
 
-namespace mt {
+namespace cport {
 
 template <typename Key>
 class task_channel_group {
@@ -47,7 +47,7 @@ private:
     std::mutex mtx_;
 };
 
-} // namespace mt
+} // namespace cport
 
 #include <cport/impl/task_channel_group.inl>
 

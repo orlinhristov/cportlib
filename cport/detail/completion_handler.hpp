@@ -14,7 +14,7 @@
 #include <cport/detail/obj_mem_pool.hpp>
 #include <cassert>
 
-namespace mt {
+namespace cport {
 
 namespace detail {
 
@@ -85,6 +85,6 @@ IMPLEMENT_OBJ_MEMORY_POOL_T1(completion_handler, H);
 
 } // namespace detail
 
-} // namespace mt
+} // namespace cport
 
 #endif // __COMPLETION_HANDLER_HPP__

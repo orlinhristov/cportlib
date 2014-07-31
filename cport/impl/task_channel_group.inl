@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-namespace mt {
+namespace cport {
 
 template <typename Key>
 inline task_channel_group<Key>::task_channel_group(task_scheduler& ts)
@@ -86,6 +86,6 @@ inline task_channel::shared_ptr task_channel_group<Key>::erase(const key_type& k
     return channel;
 }
 
-} // namespace mt
+} // namespace cport
 
 #endif //__TASK_CHANNEL_GROUP_INL__
