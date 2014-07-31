@@ -12,8 +12,8 @@
 
 #include <cstddef>
 #ifdef CPORT_ENABLE_TASK_STATUS
-#include <cport/completion_status.hpp>
-#include <cport/util/event.hpp>
+#include <cportlib/completion_status.hpp>
+#include <cportlib/util/event.hpp>
 #include <atomic>
 #include <memory>
 #include <utility>

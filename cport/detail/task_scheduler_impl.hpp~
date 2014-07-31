@@ -10,11 +10,11 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <cport/config.hpp>
-#include <cport/error_types.hpp>
-#include <cport/task_t.hpp>
-#include <cport/detail/task_handler.hpp>
-#include <cport/util/thread_group.hpp>
+#include <cportlib/config.hpp>
+#include <cportlib/error_types.hpp>
+#include <cportlib/task_t.hpp>
+#include <cportlib/detail/task_handler.hpp>
+#include <cportlib/util/thread_group.hpp>
 #include <type_traits>
 #include <condition_variable>
 #include <algorithm>
@@ -82,9 +82,9 @@ private:
 
 } // namespace mt
 
-#include <cport/detail/impl/task_scheduler_impl.inl>
+#include <cportlib/detail/impl/task_scheduler_impl.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <cport/detail/impl/task_scheduler_impl.ipp>
+#include <cportlib/detail/impl/task_scheduler_impl.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif//__TASK_SCHEDULER_IMPL_HPP__

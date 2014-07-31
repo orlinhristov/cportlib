@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <cport/task_channel.hpp>
+#include <cportlib/task_channel.hpp>
 #include <mutex>
 #include <unordered_map>
 
@@ -49,6 +49,6 @@ private:
 
 } // namespace mt
 
-#include <cport/impl/task_channel_group.inl>
+#include <cportlib/impl/task_channel_group.inl>
 
 #endif //__TASK_CHANNEL_GROUP_HPP__

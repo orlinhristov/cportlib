@@ -10,9 +10,9 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <cport/config.hpp>
-#include <cport/task_t.hpp>
-#include <cport/placeholders.hpp>
+#include <cportlib/config.hpp>
+#include <cportlib/task_t.hpp>
+#include <cportlib/placeholders.hpp>
 #include <deque>
 #include <mutex>
 #include <memory>
@@ -142,9 +142,9 @@ private:
 
 } // namespace mt
 
-#include <cport/impl/task_channel.inl>
+#include <cportlib/impl/task_channel.inl>
 #ifdef CPORT_HEADER_ONLY_LIB
-#include <cport/impl/task_channel.ipp>
+#include <cportlib/impl/task_channel.ipp>
 #endif//CPORT_HEADER_ONLY_LIB
 
 #endif //__TASK_CHANNEL_HPP__
