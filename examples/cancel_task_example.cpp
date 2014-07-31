@@ -12,7 +12,7 @@
 
 int main()
 {
-    using namespace mt;
+    using namespace cport;
 
     std::mutex m;
 
