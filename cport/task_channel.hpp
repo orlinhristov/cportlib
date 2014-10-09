@@ -115,6 +115,10 @@ public:
     /// Return the number of outstanding tasks scheduled through this channel.
     /// Tasks that are currently executing are not included.
     std::size_t enqueued_tasks() const;
+
+    /// Return indentifier of the task that is currently executing
+    task_t current_task() const;
+
 private:
 
     template <typename TaskHandler, typename CompletionHandler, typename InsertIterator>

@@ -56,6 +56,12 @@ inline std::size_t task_channel::enqueued_tasks() const
     return pending_tasks_.size();
 }
 
+task_t task_channel::current_task() const
+{
+    std::unique_lock<std::mutex> lock(mutex_);
+    return current_task_;
+}
+
 template <typename TaskHandler, typename CompletionHandler, typename InsertIterator>
 inline task_t task_channel::enqueue_task(TaskHandler&& th, CompletionHandler&& ch, InsertIterator& it)
 {
