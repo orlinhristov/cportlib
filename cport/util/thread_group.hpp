@@ -26,7 +26,7 @@ public:
     }
 
     template <typename Fn>
-    thread_group(Fn f, unsigned count = std::thread::hardware_concurrency())
+    explicit thread_group(Fn f, unsigned count = std::thread::hardware_concurrency())
     {
         threads_.reserve(count);
 

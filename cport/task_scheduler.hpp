@@ -35,7 +35,7 @@ public:
      * @param concurrency_hint A number of worker threads to run.
      *  0 == number of concurrent threads supported by the system.
      */
-    CPORT_DECL_TYPE task_scheduler(completion_port &port, std::size_t concurrency_hint = 0);
+    CPORT_DECL_TYPE explicit task_scheduler(completion_port &port, std::size_t concurrency_hint = 0);
 
     /// Construct new task_scheduler object.
     /**
