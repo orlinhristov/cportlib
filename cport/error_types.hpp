@@ -32,7 +32,7 @@ public:
     }
     explicit operator bool() const
     {
-        return none == code();
+        return none != code();
     }
 private:
     int code_;
