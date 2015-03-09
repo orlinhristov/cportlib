@@ -15,10 +15,31 @@
 
 namespace cport {
 
+namespace detail {
+
+inline void default_context(task_scheduler::worker_func_prototype fn)
+{
+    fn();
+}
+
+}
+
 task_scheduler::task_scheduler(completion_port &port, std::size_t concurrency_hint)
     : impl_(detail::get_impl(port), concurrency_hint, detail::default_context)
 {
 }
+
+task_scheduler::task_scheduler(completion_port &port, worker_context_prototype wcp)
+    : impl_(detail::get_impl(port), 0, wcp)
+{
+}
+
+task_scheduler::task_scheduler(completion_port &port,
+    std::size_t concurrency_hint, worker_context_prototype wcp)
+    : impl_(detail::get_impl(port), concurrency_hint, wcp)
+{
+}
+
 
 } // namespace cport
 

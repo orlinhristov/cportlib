@@ -28,6 +28,9 @@ public:
     /// The prototype of the worker threads entry point 
     typedef impl_type::worker_func_prototype worker_func_prototype;
 
+    /// The prototype of the worker's context
+    typedef std::function<void(worker_func_prototype)> worker_context_prototype;
+
     /// Construct new task_scheduler object.
     /**
      * @param port A port to use to dispatch completion handlers.
@@ -35,7 +38,8 @@ public:
      * @param concurrency_hint A number of worker threads to run.
      *  0 == number of concurrent threads supported by the system.
      */
-    CPORT_DECL_TYPE explicit task_scheduler(completion_port &port, std::size_t concurrency_hint = 0);
+    CPORT_DECL_TYPE explicit task_scheduler(completion_port &port
+        , std::size_t concurrency_hint = 0);
 
     /// Construct new task_scheduler object.
     /**
@@ -44,12 +48,11 @@ public:
      *
      * @param port A port to use to dispatch completion handlers.
      *
-     * @param wtc Callable object called at start of each worker thread.
-     *  This object must accept parameter of type worker_func_prototype
-     *  and must call it to run the worker's entry point.
+     * @param wcp A context of each worker thread.
+    *  This object accepts parameter of type worker_func_prototype
+    *  and must call it to run the worker's entry point.
      */
-    template <typename WorkerThreadContext>
-    task_scheduler(completion_port &port, WorkerThreadContext wtc);
+    CPORT_DECL_TYPE task_scheduler(completion_port &port, worker_context_prototype wcp);
 
     /// Construct new task_scheduler object.
     /**
@@ -58,13 +61,12 @@ public:
     * @param concurrency_hint A number of worker threads to run.
     *  0 = number of concurrent threads supported by the system.
     *
-    * @param wtc Callable object called in the context of each worker thread.
-    *  This object must accept parameter of type worker_func_prototype
+    * @param wcp A context of each worker thread.
+    *  This object accepts parameter of type worker_func_prototype
     *  and must call it to run the worker's entry point.
     */
-    template <typename WorkerThreadContext>
-    task_scheduler(completion_port &port
-        , std::size_t concurrency_hint, WorkerThreadContext wtc);
+    CPORT_DECL_TYPE task_scheduler(completion_port &port
+        , std::size_t concurrency_hint, worker_context_prototype wcp);
 
     /// Disable copy constructor.
     task_scheduler(const task_scheduler&) = delete;

@@ -14,29 +14,6 @@
 
 namespace cport {
 
-namespace detail {
-
-inline void default_context(task_scheduler::worker_func_prototype fn)
-{
-    fn();
-}
-
-}
-
-template <typename WorkerThreadContext>
-inline task_scheduler::task_scheduler(completion_port &port, WorkerThreadContext wtc)
-    : impl_(detail::get_impl(port), 0, wtc)
-{
-}
-
-template <typename WorkerThreadContext>
-inline task_scheduler::task_scheduler(completion_port &port,
-    std::size_t concurrency_hint,
-    WorkerThreadContext wtc)
-    : impl_(detail::get_impl(port), concurrency_hint, wtc)
-{
-}
-
 template <typename TaskHandler, typename CompletionHandler>
 inline task_t task_scheduler::async(TaskHandler&& th, CompletionHandler&& ch)
 {
