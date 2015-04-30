@@ -1,7 +1,7 @@
 //
 // async_call_example2.cpp
 //
-// This example demonstrates how to schedule a task for asynhronous execution, providing callback handler
+// This example demonstrates how to schedule a task for asynchronous execution, providing callback handler
 //
 
 #include <cport/completion_port.hpp>
@@ -16,7 +16,7 @@ int main()
 
     task_scheduler ts(p);
 
-    // schedule a task for asynhronous execution
+    // schedule a task for asynchronous execution
     ts.async(
         // task handler
         [] (generic_error&) { std::cout << "Hello, World!" << std::endl; },

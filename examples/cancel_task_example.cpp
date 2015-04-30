@@ -7,42 +7,41 @@
 #include <cport/completion_port.hpp>
 #include <cport/task_scheduler.hpp>
 #include <iostream>
-#include <mutex>
-#include <condition_variable>
+#include <chrono>
 
 int main()
 {
     using namespace cport;
 
-    std::mutex m;
-
-    std::condition_variable cv;
-
     completion_port p;
 
-    // initialize task_scheduler passing user-defined worker thread context
-    task_scheduler ts(p, [&](task_scheduler::worker_func_prototype fn) {
-        // block the worker thread startup
-        std::unique_lock<std::mutex> lock(m);
-        cv.wait(lock);
-        lock.unlock();
-        // call the worker
-        fn();
+    // initialize the task_scheduler object with one worker thread to guarentee
+    //  that the scheduled tasks will be executed in sequential order. 
+    task_scheduler ts(p, 1);
+
+    // schedule a task that will delay processing of the next one for a while.
+    ts.async([](generic_error&) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     });
 
-    // schedule a task for asynhronous execution
+    // schedule a task for asynchronous execution
     task_t t = ts.async(
         // task handler
-        [](generic_error&) { std::cout << "Hello, World!" << std::endl; },
+        [](generic_error&) { std::cout << "Hello, World!" << std::endl; }
+        ,
         // completion handler
-        [](const generic_error& e) { std::cout << e.what() << std::endl; }
+        [](const generic_error& e) {
+            if (e.code() == operation_aborted) {
+                std::cout << "Task execution aborted." << std::endl;
+            }
+            else {
+                std::cout << "Task execution complete." << std::endl;
+            }
+        }
     );
 
     // cancel the task
     ts.cancel(t);
-    
-    // unblock worker threads
-    cv.notify_all();
 
     // wait for the completion handler to be called
     p.wait();

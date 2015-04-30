@@ -20,7 +20,7 @@ int main()
 
     task_scheduler ts(p);
 
-    // schedule a task for asynhronous execution
+    // schedule a task for asynchronous execution
     task_t t = ts.async([](generic_error&) { std::cout << "Hello, World!" << std::endl; });
 
     // block until task handler is executed

@@ -1,7 +1,7 @@
 //
 // async_call_example.cpp
 //
-// This example demonstrates how to schedule a lambda function for asynhronous call.
+// This example demonstrates how to schedule a lambda function for asynchronous call.
 // Behaves the same as if bound to a thread:
 //  std::thread t([](){ std::cout << "Hello, World!" << std::endl; });
 //  t.join();
@@ -20,7 +20,7 @@ int main()
 
     task_scheduler ts(p);
 
-    // schedule a task for asynhronous execution
+    // schedule a task for asynchronous execution
     ts.async([] (generic_error&) { std::cout << "Hello, World!" << std::endl; });
 
     // wait for the task to complete
