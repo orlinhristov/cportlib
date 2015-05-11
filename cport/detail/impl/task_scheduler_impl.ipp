@@ -17,6 +17,20 @@ namespace cport {
 
 namespace detail {
 
+task_scheduler_impl::task_scheduler_impl(completion_port_impl &port
+        , std::size_t concurrency_hint
+        , worker_context_prototype wcp)
+    : port_(port)
+    , threads_stopped_(false)
+{
+    if (concurrency_hint == 0)
+        concurrency_hint = std::max<std::size_t>(std::thread::hardware_concurrency(), 1);
+
+    threads_ = util::thread_group(
+        std::bind(&task_scheduler_impl::thread_routine, this, wcp),
+        concurrency_hint);
+}
+
 task_scheduler_impl::~task_scheduler_impl()
 {
     stop_threads();

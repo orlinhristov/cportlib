@@ -16,25 +16,6 @@ namespace cport {
 
 namespace detail {
 
-template <typename WorkerThreadContext>
-task_scheduler_impl::task_scheduler_impl(completion_port_impl &port
-    , std::size_t concurrency_hint
-    , WorkerThreadContext wtc)
-    : port_(port)
-    , threads_stopped_(false)
-{
-    if (concurrency_hint == 0)
-        concurrency_hint = std::max<std::size_t>(std::thread::hardware_concurrency(), 1);
-
-    typedef detail::protected_t<WorkerThreadContext> WorkerThreadContextP;
-
-    threads_ = util::thread_group(std::bind(
-            &task_scheduler_impl::thread_routine<WorkerThreadContextP>,
-            this,
-            WorkerThreadContextP(wtc)),
-        concurrency_hint);
-}
-
 template <typename TaskHandler, typename CompletionHandler>
 inline task_t task_scheduler_impl::async(TaskHandler&& th, CompletionHandler&& ch)
 {
@@ -97,10 +78,9 @@ inline void task_scheduler_impl::join_threads()
     threads_.join();
 }
 
-template <typename WorkerThreadContext>
-inline void task_scheduler_impl::thread_routine(WorkerThreadContext wtc)
+inline void task_scheduler_impl::thread_routine(worker_context_prototype wtp)
 {
-    wtc(std::bind(&task_scheduler_impl::thread_routine_loop, this));
+    wtp(std::bind(&task_scheduler_impl::thread_routine_loop, this));
 }
 
 } // namespace detail

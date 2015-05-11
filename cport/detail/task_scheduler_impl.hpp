@@ -35,10 +35,11 @@ class task_scheduler_impl {
 public:
     typedef std::function<void (void)> worker_func_prototype;
 
-    template <typename WorkerThreadContext>
-    task_scheduler_impl(completion_port_impl &port
+    typedef std::function<void(worker_func_prototype)> worker_context_prototype;
+
+    CPORT_DECL_TYPE task_scheduler_impl(completion_port_impl &port
         , std::size_t concurrency_hint
-        , WorkerThreadContext wtc);
+        , worker_context_prototype wcp);
 
     CPORT_DECL_TYPE ~task_scheduler_impl();
 
@@ -65,8 +66,7 @@ private:
 
     void join_threads();
 
-    template <typename WorkerThreadContext>
-    void thread_routine(WorkerThreadContext wtc);
+    CPORT_DECL_TYPE void thread_routine(worker_context_prototype wtp);
 
     CPORT_DECL_TYPE void thread_routine_loop();
 

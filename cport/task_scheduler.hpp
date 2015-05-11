@@ -29,7 +29,7 @@ public:
     typedef impl_type::worker_func_prototype worker_func_prototype;
 
     /// The prototype of the worker's context
-    typedef std::function<void(worker_func_prototype)> worker_context_prototype;
+    typedef impl_type::worker_context_prototype worker_context_prototype;
 
     /// Construct new task_scheduler object.
     /**
