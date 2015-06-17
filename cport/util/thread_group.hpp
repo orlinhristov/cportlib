@@ -26,11 +26,11 @@ public:
     }
 
     template <typename Fn>
-    explicit thread_group(Fn f, unsigned count = std::thread::hardware_concurrency())
+    explicit thread_group(Fn f, std::size_t count = std::thread::hardware_concurrency())
     {
         threads_.reserve(count);
 
-        for (unsigned i = 0; i < count; ++i)
+        for (std::size_t i = 0; i < count; ++i)
         {
             add(f);
         }
