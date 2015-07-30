@@ -24,6 +24,11 @@ inline task_channel::shared_ptr task_channel::make_shared(task_scheduler &ts)
     return shared_ptr(new task_channel(ts));
 }
 
+inline task_scheduler& task_channel::scheduler()
+{
+    return ts_;
+}
+
 template <typename TaskHandler, typename CompletionHandler>
 inline task_t task_channel::enqueue_front(TaskHandler&& th, CompletionHandler&& ch)
 {

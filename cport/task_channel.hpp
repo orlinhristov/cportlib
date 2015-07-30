@@ -41,6 +41,9 @@ public:
 
     task_channel& operator=(const task_channel&) = delete;
 
+    /// Return the task scheduler wrapped by this channel
+    task_scheduler& scheduler();
+
     /// Add a task before the current first task.
     /**
     * The completion handler is posted to the completion port

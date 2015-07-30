@@ -74,6 +74,9 @@ public:
     /// Disable assignment operator.
     task_scheduler& operator=(task_scheduler&) = delete;
 
+    /// Return completion port used to initialize this task scheduler
+    completion_port& port();
+
     /// Schedule a task for an asynchronous execution
     /**
      * The completion handler is posted to the completion port after task
