@@ -137,6 +137,8 @@ private:
     template<typename T>
     friend typename T::impl_type& detail::get_impl(T&);
     impl_type impl_;
+
+    completion_port& cp_;
 };
 
 } // namespace cport

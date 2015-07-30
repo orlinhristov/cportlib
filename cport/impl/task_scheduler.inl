@@ -14,6 +14,11 @@
 
 namespace cport {
 
+inline completion_port& task_scheduler::port()
+{
+    return cp_;
+}
+
 template <typename TaskHandler, typename CompletionHandler>
 inline task_t task_scheduler::async(TaskHandler&& th, CompletionHandler&& ch)
 {

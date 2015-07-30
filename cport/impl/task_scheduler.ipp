@@ -25,18 +25,18 @@ inline void default_context(task_scheduler::worker_func_prototype fn)
 }
 
 task_scheduler::task_scheduler(completion_port &port, std::size_t concurrency_hint)
-    : impl_(detail::get_impl(port), concurrency_hint, detail::default_context)
+    : task_scheduler(port, concurrency_hint, detail::default_context)
 {
 }
 
 task_scheduler::task_scheduler(completion_port &port, worker_context_prototype wcp)
-    : impl_(detail::get_impl(port), 0, wcp)
+    : task_scheduler(port, 0, wcp)
 {
 }
 
 task_scheduler::task_scheduler(completion_port &port,
     std::size_t concurrency_hint, worker_context_prototype wcp)
-    : impl_(detail::get_impl(port), concurrency_hint, wcp)
+    : impl_(detail::get_impl(port), concurrency_hint, wcp), cp_(port)
 {
 }
 
