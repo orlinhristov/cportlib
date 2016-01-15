@@ -10,7 +10,7 @@
 // visit http://www.apache.org/licenses/ for more information.
 //
 
-#include <cport/detail/protected_t.hpp>
+#include <cport/util/protected_t.hpp>
 
 namespace cport {
 
