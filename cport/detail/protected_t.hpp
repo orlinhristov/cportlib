@@ -14,8 +14,9 @@
 
 namespace cport {
 
-namespace util {
+namespace detail {
 
+/// Protect a bind function object from evaluation
 template <typename F>
 struct protected_t {
     explicit protected_t(const F& f) 
@@ -38,7 +39,6 @@ private:
     F f_;
 };
 
-/// Protect a bind function object from evaluation
 template <typename F>
 protected_t<F> protect(F&& f)
 {
