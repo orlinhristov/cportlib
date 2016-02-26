@@ -12,8 +12,7 @@
 
 namespace cport {
 
-// The scoped enumeration describes current task execution status
-
+/// The scoped enumeration describes current task execution status
 enum class completion_status { 
     none,
     scheduled, // The operation is scheduled for execution.

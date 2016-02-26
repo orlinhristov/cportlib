@@ -27,7 +27,7 @@ class task_scheduler;
 
 class generic_error;
 
-/// This class is a task_scheduler wrapper that guarantees sequential execution of tasks
+/// This class is a task_scheduler wrapper. It provides a mechanism that guarantees sequential execution of tasks
 class task_channel : public std::enable_shared_from_this<task_channel> {
 
     explicit CPORT_DECL_TYPE task_channel(task_scheduler &ts);
@@ -35,46 +35,53 @@ public:
 
     typedef std::shared_ptr<task_channel> shared_ptr;
 
+    /// Constructs an object of type task_channel wrapped in a std::shared_ptr
+    /**
+     * @param ts A reference to a task_scheduler object that will be used to
+     *  schedule task in sequential order.
+     *
+     * @returns A task_channel object wrapped in a std::shared_ptr
+     */
     static shared_ptr make_shared(task_scheduler &ts);
 
     task_channel(const task_channel&) = delete;
 
     task_channel& operator=(const task_channel&) = delete;
 
-    /// Return the task scheduler wrapped by this channel
-    task_scheduler& scheduler();
+    /// Return the task scheduler wrapped by this channel.
+    task_scheduler& scheduler() const;
 
-    /// Add a task before the current first task.
+    /// Add a task before the current first task and return immediately.
     /**
-    * The completion handler is posted to the completion port
-    * after task execution completes.
-    *
-    * @param th A task handler to be executed asynchronously.
-    *
-    * @param ch A completion handler to be posted to the completion port
-    *  after task execution completes
-    *
-    * @returns A task identifier
-    */
+     * The completion handler is posted to the completion port
+     * after task execution completes.
+     *
+     * @param th A task handler to be executed asynchronously.
+     *
+     * @param ch A completion handler to be posted to the completion port
+     *  after task execution completes
+     *
+     * @returns A task identifier
+     */
     template <typename TaskHandler, typename CompletionHandler>
     task_t enqueue_front(TaskHandler&& th, CompletionHandler&& ch);
 
-    /// Add a task after the current last task.
+    /// Add a task after the current last task and return immediately.
     /**
-    * The completion handler is posted to the completion port
-    * after task execution completes.
-    *
-    * @param th A task handler to be executed asynchronously.
-    *
-    * @param ch A completion handler to be posted to the completion port
-    *  after task execution completes
-    *
-    * @returns A task identifier
-    */
+     * The completion handler is posted to the completion port
+     * after task execution completes.
+     *
+     * @param th A task handler to be executed asynchronously.
+     *
+     * @param ch A completion handler to be posted to the completion port
+     *  after task execution completes
+     *
+     * @returns A task identifier
+     */
     template <typename TaskHandler, typename CompletionHandler>
     task_t enqueue_back(TaskHandler&& th, CompletionHandler&& ch);
 
-    /// Add a task before the current first task.
+    /// Add a task before the current first task and return immediately.
     /**
     *
     * @param h A task handler to be executed asynchronously.
@@ -84,7 +91,7 @@ public:
     template <typename Handler>
     task_t enqueue_front(Handler&& h);
 
-    /// Add a task after the current last task.
+    /// Add a task after the current last task and return immediately.
     /**
     *
     * @param h A task handler to be executed asynchronously.

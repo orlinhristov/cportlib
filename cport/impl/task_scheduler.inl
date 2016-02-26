@@ -14,7 +14,7 @@
 
 namespace cport {
 
-inline completion_port& task_scheduler::port()
+inline completion_port& task_scheduler::port() const
 {
     return cp_;
 }

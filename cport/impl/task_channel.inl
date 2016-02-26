@@ -24,7 +24,7 @@ inline task_channel::shared_ptr task_channel::make_shared(task_scheduler &ts)
     return shared_ptr(new task_channel(ts));
 }
 
-inline task_scheduler& task_channel::scheduler()
+inline task_scheduler& task_channel::scheduler() const
 {
     return ts_;
 }

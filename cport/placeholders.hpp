@@ -14,6 +14,7 @@
 
 namespace cport {
 namespace placeholders {
+    /// Used to specify error placeholder in calls to standard bind function.
     const decltype(std::placeholders::_1) error = std::placeholders::_1;
 }
 }

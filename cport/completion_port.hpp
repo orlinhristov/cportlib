@@ -25,25 +25,25 @@ public:
     /// Construct new completion_port
     CPORT_DECL_TYPE completion_port();
 
-    /// Destruct the port
+    /// Destruct the port.
     /**
      * @note All ready completion handlers will be processed before destroy.
      */
     CPORT_DECL_TYPE ~completion_port();
 
-    /// Disable copy constructor
+    /// Disable copy constructor.
     completion_port(const completion_port&) = delete;
 
-    /// Disable assignment operator
+    /// Disable assignment operator.
     completion_port& operator=(const completion_port&) = delete;
 
     /// Dispatch a completion handler.
     /**
     * Post a completion handler to be invoked by any of the threads
-    * blocked on wait(), wait_one(), run() and run_one() methods or
-    * when methods poll() or poll_one() are called.
-    * This handler will be called before any other handler posted
-    * using post() method.
+    *  blocked on wait(), wait_one(), run() and run_one() methods or
+    *  when methods poll() or poll_one() are called.
+    *  This handler will be called before any other handler posted
+    *  using post() method.
     *
     * @param h A completion handler to be invoked.
     *
@@ -55,10 +55,10 @@ public:
     /// Dispatch a completion handler.
     /**
     * Post a completion handler to be invoked by any of the threads
-    * blocked on wait(), wait_one(), run() and run_one() methods or
-    * when methods poll() or poll_one() are called.
-    * This handler will be called before any other handler posted
-    * using post() method.
+    *  blocked on wait(), wait_one(), run() and run_one() methods or
+    *  when methods poll() or poll_one() are called.
+    *  This handler will be called before any other handler posted
+    *  using post() method.
     *
     * @param h A completion handler to be invoked.
     *
@@ -66,11 +66,11 @@ public:
     template <typename Handler>
     void dispatch(Handler&& h);
     
-    /// Post a completion handler.
+    /// Post a completion handler and return immediately.
     /**
      * Post a completion handler to be invoked by any of the threads
-     * blocked on wait(), wait_one(), run() and run_one() methods or
-     * when methods poll() or poll_one() are called.
+     *  blocked on wait(), wait_one(), run() and run_one() methods or
+     *  when methods poll() or poll_one() are called.
      *
      * @param h A completion handler to be invoked.
      *
@@ -79,11 +79,11 @@ public:
     template <typename Handler>
     void post(Handler&& h, const generic_error& e);
 
-    /// Post a completion handler.
+    /// Post a completion handler and return immediately.
     /**
      * Post a completion handler to be invoked by any of the threads
-     * blocked on wait(), wait_one(), run() and run_one() methods or
-     * when methods poll() or poll_one() are called.
+     *  blocked on wait(), wait_one(), run() and run_one() methods or
+     *  when methods poll() or poll_one() are called.
      *
      * @param h The completion handler to be invoked.
      */
@@ -113,7 +113,7 @@ public:
     /// Wait until all enqueued operations are processed.
     /**
      * This method will block the calling thread until all enqueued operations
-     * are executed and all ready completion handlers are processed.
+     *  are executed and all ready completion handlers are processed.
      *
      * @returns The number of processed handlers.
      */
@@ -122,8 +122,8 @@ public:
     /// Wait for one ready completion handler to be processed.
     /**
      * This method will block the calling thread until one ready handler
-     * is processed. If there is no ready completion handler and there is
-     * no enqueued operation the method will return immediately.
+     *  is processed. If there is no ready completion handler and there is
+     *  no enqueued operation the method will return immediately.
      *
      * @returns true if a handler was processed, otherwise returns false.
      */
@@ -140,7 +140,7 @@ public:
     /// Run processing of ready completion handlers.
     /**
      * This method will block the calling thread until one operation associated
-     * with the port is processed or stop() method is called.
+     *  with the port is processed or stop() method is called.
      *
      * @returns true if a handler was processed, otherwise will return false.
      */
@@ -149,7 +149,7 @@ public:
     /// Run processing of ready completion handlers.
     /**
      * This method will return when there is no ready handlers, without blocking
-     * the calling thread.
+     *  the calling thread.
      *
      * @returns The number of processed handlers.
      */
@@ -158,7 +158,7 @@ public:
     /// Run processing of one ready completion handlers.
     /**
      * This method will return when there is no ready handlers, without blocking
-     * the calling thread.
+     *  the calling thread.
      *
      * @returns true if a handlers was processed, otherwise will return false.
      */
@@ -178,7 +178,7 @@ public:
      */
     void reset();
 
-    /// Get the number of ready completion handlers, ready to be called.
+    /// Get the number of completion handlers, ready to be called.
     std::size_t ready_handlers() const;
 
     /// The implementation type

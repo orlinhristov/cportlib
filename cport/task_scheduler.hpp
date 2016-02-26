@@ -20,6 +20,13 @@ namespace cport {
 
 class completion_port;
 
+/// A class used to schedule operations (tasks) for asynchronous execution.
+/**
+ * Every object of this type will start as many worker threads as configured.
+ * The default number of workers is equal to the number of concurrent
+ *  threads supported by the system.
+ *
+ */
 class task_scheduler {
 public:
     /// The implementation type
@@ -44,13 +51,13 @@ public:
     /// Construct new task_scheduler object.
     /**
      * The number of workers started is equal to the number of concurrent
-     * threads supported by the system.
+     *  threads supported by the system.
      *
      * @param port A port to use to dispatch completion handlers.
      *
      * @param wcp A context of each worker thread.
-    *  This object accepts parameter of type worker_func_prototype
-    *  and must call it to run the worker's entry point.
+     *  This object accepts parameter of type worker_func_prototype
+     *  and must call it to run the worker's entry point.
      */
     CPORT_DECL_TYPE task_scheduler(completion_port &port, worker_context_prototype wcp);
 
@@ -74,13 +81,13 @@ public:
     /// Disable assignment operator.
     task_scheduler& operator=(task_scheduler&) = delete;
 
-    /// Return completion port used to initialize this task scheduler
-    completion_port& port();
+    /// Return the completion port used to initialize this task scheduler
+    completion_port& port() const;
 
-    /// Schedule a task for an asynchronous execution
+    /// Schedule a task for an asynchronous execution and return immediately.
     /**
      * The completion handler is posted to the completion port after task
-     * execution completes
+     *  execution completes
      *
      * @param th A task handler to be executed asynchronously.
      *
@@ -92,7 +99,7 @@ public:
     template <typename TaskHandler, typename CompletionHandler>
     task_t async(TaskHandler&& th, CompletionHandler&& ch);
 
-    /// Schedule a task for an asynchronous execution
+    /// Schedule a task for an asynchronous execution and return immediately.
     /**
      *
      * @param h A task handler to be executed asynchronously.
@@ -105,7 +112,7 @@ public:
     /// Cancel specific task.
     /**
      * Completion handler is called with operation_aborted error code.
-     * The method call has no effect if task's handler is already executed.
+     *  The method call has no effect if task's handler is already executed.
      *
      * @param task An identifier to a task to be canceled.
      *
@@ -117,14 +124,14 @@ public:
     /// Cancel all outstanding tasks.
     /**
      * Completion handler of each task is called
-     * with operation_aborted error code.
+     *  with operation_aborted error code.
      *
      * @returns The number of tasks canceled.
      */
     std::size_t cancel_all();
 
     /// Return the number of outstanding tasks. Tasks that are currently
-    /// executing are not included.
+    ///  executing are not included.
     std::size_t packaged_tasks() const;
 
 protected:
