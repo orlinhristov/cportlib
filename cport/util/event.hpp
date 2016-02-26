@@ -21,17 +21,27 @@ namespace cport {
 
 namespace util {
 
+/// This class provides mechanism to block one or more calling threads until signaled to resume.
 class event {
 public:
+
+    /// Construct an event object.
+    /**
+     * @param signaled If this parameter is true the initial state of this event is signaled.
+     *  Otherwise it is nonsignaled.
+     */
     explicit event(bool signaled = false)
         : signaled_(signaled)
     {
     }
 
+    /// Delete copy constructor.
     event(const event&) = delete;
 
+    /// Delete assignment operator.
     event& operator=(const event&) = delete;
 
+    /// Wait for this event to be signaled.
     void wait()
     {
         std::unique_lock<std::mutex> lock(mtx_);
@@ -41,6 +51,10 @@ public:
         }
     }
 
+    /// Block the caller thread until this event is signaled or after the specified timeout duration.
+    /**
+     * @param d The maximum time to wait for the event, to be signaled.
+     */
     template <typename Rep, typename Period>
     std::cv_status wait_for(const std::chrono::duration<Rep, Period>& d)
     {
@@ -53,6 +67,10 @@ public:
         return stat;
     }
 
+    /// Block the caller thread until this event is signaled or until specified time point has been reached.
+    /**
+     * @param d The maximum time to wait for the event, to be signaled.
+     */
     template <typename Clock, typename Duration>
     std::cv_status wait_until(const std::chrono::time_point<Clock, Duration>& tp)
     {
@@ -65,6 +83,7 @@ public:
         return stat;
     }
 
+    /// Unblock one of the threads, waiting for this event to be singaled.
     void notify_one()
     {
         std::unique_lock<std::mutex> lock(mtx_);
@@ -72,6 +91,7 @@ public:
         cond_.notify_one();
     }
 
+    /// Unblock all the threads, waiting for this event to be singaled.
     void notify_all()
     {
         std::unique_lock<std::mutex> lock(mtx_);
@@ -79,6 +99,7 @@ public:
         cond_.notify_all();
     }
 
+    /// Reset the current state of this event to nonsignaled.
     void reset()
     {
         std::unique_lock<std::mutex> lock(mtx_);
