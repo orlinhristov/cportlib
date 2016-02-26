@@ -22,7 +22,7 @@ class generic_error;
 class completion_port {
 public:
 
-    /// Construct new completion_port
+    /// Construct new completion_port.
     CPORT_DECL_TYPE completion_port();
 
     /// Destruct the port.
@@ -103,7 +103,7 @@ public:
 
     /// Call a completion handler.
     /**
-    * Call a completion handler in calling thread
+    * Call a completion handler in calling thread.
     *
     * @param h The completion handler to be invoked.
     */
@@ -181,7 +181,7 @@ public:
     /// Get the number of completion handlers, ready to be called.
     std::size_t ready_handlers() const;
 
-    /// The implementation type
+    /// The implementation type.
     typedef detail::completion_port_impl impl_type;
 protected:
     const impl_type& impl() const;

@@ -33,7 +33,7 @@ public:
     }
 
     /// Construct a group of threads.
-    /*
+    /**
      * @param f A callable object to be run in all threads created by the constructor.
      *
      * @param count The number of threads to be created. If this parameter is not specified,

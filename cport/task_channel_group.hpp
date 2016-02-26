@@ -16,6 +16,13 @@
 
 namespace cport {
 
+/// This class provides mechanism to associate a task_cannel with a unique key.
+/**
+ * All task_channel objects use shared task_scheduler instance.
+ *
+ * @param Key Must meet the requirements of the Key template parameter type
+ *  used in the standart class unordered_map.
+ */
 template <typename Key>
 class task_channel_group {
 public:
