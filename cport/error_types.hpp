@@ -15,7 +15,7 @@
 namespace cport {
 
 /// A generic error type
-/*
+/**
  * It reports errors related to the library and such that are beyond
  *  the library scope (user-defined).
  */

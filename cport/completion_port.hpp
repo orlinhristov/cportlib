@@ -165,7 +165,7 @@ public:
     bool pull_one();
 
     /// Interrupt all threads blocked on wait(), wait_one(),
-    /// run() and run_one() methods.
+    ///  run() and run_one() methods.
     void stop();
 
     /// Test if the port is stopped.

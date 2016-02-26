@@ -16,7 +16,7 @@
 
 namespace cport {
 
-/// This class provides mechanism to associate a task_cannel with a unique key.
+/// Provides mechanism to associate a task_cannel with a unique key.
 /**
  * All task_channel objects use shared task_scheduler instance.
  *

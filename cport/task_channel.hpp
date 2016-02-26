@@ -27,8 +27,7 @@ class task_scheduler;
 
 class generic_error;
 
-/// This class is a task_scheduler wrapper. It provides a mechanism
-///  that guarantees sequential execution of tasks.
+/// Provides a mechanism that guarantees sequential execution of tasks.
 class task_channel : public std::enable_shared_from_this<task_channel> {
 
     explicit CPORT_DECL_TYPE task_channel(task_scheduler &ts);

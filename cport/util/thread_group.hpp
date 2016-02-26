@@ -19,7 +19,7 @@ namespace cport {
 
 namespace util {
 
-/// This class provides a mechanism to manage the lifecycle of a group of threads.
+/// Provides a mechanism to manage the lifecycle of a group of threads.
 /**
  * Defines an interface similar to the one, that the standart library defines,
  *  for a singe thread of execution.

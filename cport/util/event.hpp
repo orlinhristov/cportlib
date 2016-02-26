@@ -21,7 +21,7 @@ namespace cport {
 
 namespace util {
 
-/// This class provides mechanism to block one or more calling threads until signaled to resume.
+/// Provides mechanism to block one or more calling threads until signaled to resume.
 class event {
 public:
 

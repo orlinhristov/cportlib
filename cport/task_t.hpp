@@ -15,7 +15,7 @@
 
 namespace cport {
 
-/// This class encapsulates an operation identifier assigned to a scheduled task.
+/// Encapsulates an operation identifier assigned to a scheduled task.
 class task_t {
 public:
     typedef detail::operation_id value_type;
