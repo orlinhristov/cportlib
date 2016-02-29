@@ -50,7 +50,7 @@ public:
     /// Delete assignment operator.
     task_channel& operator=(const task_channel&) = delete;
 
-    /// Return the task scheduler wrapped by this channel.
+    /// Get the task scheduler wrapped by this channel.
     task_scheduler& scheduler() const;
 
     /// Add a task before the current first task and return immediately.
@@ -124,11 +124,11 @@ public:
     */
     CPORT_DECL_TYPE std::size_t cancel_all();
 
-    /// Return the number of outstanding tasks scheduled through this channel.
+    /// Get the number of outstanding tasks scheduled through this channel.
     /// Tasks that are currently executing are not included.
     std::size_t enqueued_tasks() const;
 
-    /// Return indentifier of the task that is currently executing.
+    /// Get indentifier of the task that is currently executing.
     task_t current_task() const;
 
 private:

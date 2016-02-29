@@ -81,7 +81,7 @@ public:
     /// Disable assignment operator.
     task_scheduler& operator=(task_scheduler&) = delete;
 
-    /// Return the completion port used to initialize this task scheduler
+    /// Get the completion port used to initialize the object
     completion_port& port() const;
 
     /// Schedule a task for an asynchronous execution and return immediately.
@@ -130,7 +130,7 @@ public:
      */
     std::size_t cancel_all();
 
-    /// Return the number of outstanding tasks. Tasks that are currently
+    /// Get the number of outstanding tasks. Tasks that are currently
     ///  executing are not included.
     std::size_t packaged_tasks() const;
 

@@ -69,7 +69,7 @@ public:
 
     /// Block the caller thread until this event is signaled or until specified time point has been reached.
     /**
-     * @param d The maximum time to wait for the event, to be signaled.
+     * @param d The time point to wait until the event, to be signaled.
      */
     template <typename Clock, typename Duration>
     std::cv_status wait_until(const std::chrono::time_point<Clock, Duration>& tp)
@@ -99,6 +99,13 @@ public:
         cond_.notify_all();
     }
 
+    /// Check if the event is signaled.
+    bool signaled() const
+    {
+        std::unique_lock<std::mutex> lock(mtx_);
+        return signaled_;
+    }
+
     /// Reset the current state of this event to nonsignaled.
     void reset()
     {
@@ -108,7 +115,7 @@ public:
 
 private:
     std::condition_variable cond_;
-    std::mutex mtx_;
+    mutable std::mutex mtx_;
     bool signaled_;
 };
 
