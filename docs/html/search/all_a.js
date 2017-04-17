@@ -1,0 +1,11 @@
+var searchData=
+[
+  ['operation_5faborted',['operation_aborted',['../namespacecport.html#a8dee7cf5f866729bf4d2b38604470055ac3cae801c2a4b51835ae7757a50a168b',1,'cport']]],
+  ['operation_5faborted_5ferror',['operation_aborted_error',['../structcport_1_1operation__aborted__error.html',1,'cport']]],
+  ['operation_5faborted_5ferror',['operation_aborted_error',['../structcport_1_1operation__aborted__error.html#ac1819c45c874682fc27ebc295ec701c4',1,'cport::operation_aborted_error']]],
+  ['operator_20bool',['operator bool',['../classcport_1_1generic__error.html#aa425275eb6167d021c69b48534134def',1,'cport::generic_error::operator bool()'],['../classcport_1_1task__t.html#a23484c51868968b86c1cebd62d0eac7a',1,'cport::task_t::operator bool()']]],
+  ['operator_21_3d',['operator!=',['../classcport_1_1task__t.html#a1b19907a4dddb1379efcb7304f477725',1,'cport::task_t']]],
+  ['operator_28_29',['operator()',['../classcport_1_1completion__handler__wrapper.html#a3d79caa88fab9c1b6b7bcdf23e2d82cc',1,'cport::completion_handler_wrapper::operator()()'],['../classcport_1_1completion__handler__wrapper.html#a75464fcd9062d3da7d65ae0ce867a8c7',1,'cport::completion_handler_wrapper::operator()(const generic_error &amp;e)']]],
+  ['operator_3d',['operator=',['../classcport_1_1completion__handler__wrapper.html#a0f06637312e417afc57a332507d36255',1,'cport::completion_handler_wrapper::operator=(const completion_handler_wrapper &amp;rsh)=delete'],['../classcport_1_1completion__handler__wrapper.html#a7ef731ec9810136b9639fe7bc10aa792',1,'cport::completion_handler_wrapper::operator=(completion_handler_wrapper &amp;&amp;rhs)'],['../classcport_1_1completion__port.html#aaa0b8fcd124e932b167f21ab110f3713',1,'cport::completion_port::operator=()'],['../classcport_1_1task__channel.html#afd79aed2b76c5419fbe904b152a44147',1,'cport::task_channel::operator=()'],['../classcport_1_1task__scheduler.html#afe7a83ffeb46edff34364e674eeb366f',1,'cport::task_scheduler::operator=()'],['../classcport_1_1task__t.html#a51315c9d2d43a59423a0b106af167dd0',1,'cport::task_t::operator=(const task_t &amp;t)=default'],['../classcport_1_1task__t.html#a3096c754ea2e28816ed16bbddc5154db',1,'cport::task_t::operator=(task_t &amp;&amp;t)']]],
+  ['operator_3d_3d',['operator==',['../classcport_1_1task__t.html#a855bb0047b65239669db247022597e74',1,'cport::task_t']]]
+];
