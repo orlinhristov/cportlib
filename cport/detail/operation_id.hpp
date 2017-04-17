@@ -36,7 +36,7 @@ public:
     {
     }
 
-    operation_id(const operation_id & op) = default;
+    operation_id(const operation_id& op) = default;
 
     operation_id(operation_id&& op)
         : value_(op.value_)
@@ -45,15 +45,17 @@ public:
         , completion_event_(std::move(op.completion_event_))
 #endif
     {
+        op.value_ = value_type();
     }
 
-    operation_id& operator=(const operation_id & op) = default;
+    operation_id& operator=(const operation_id& op) = default;
 
     operation_id& operator=(operation_id&& op)
     {
         if (this != &op)
         {
             value_ = op.value_;
+            op.value_ = value_type();
 #ifdef CPORT_ENABLE_TASK_STATUS
             status_ = std::move(op.status_);
             completion_event_ = std::move(op.completion_event_);
@@ -62,17 +64,17 @@ public:
         return *this;
     }
 
-    bool operator==(const operation_id &op) const
+    bool operator==(const operation_id& op) const
     {
         return value_ == op.value_;
     }
 
-    bool operator!=(const operation_id &op) const
+    bool operator!=(const operation_id& op) const
     {
         return !(*this == op);
     }
 
-    bool operator<(const operation_id &op) const
+    bool operator<(const operation_id& op) const
     {
         return value_ < op.value_;
     }

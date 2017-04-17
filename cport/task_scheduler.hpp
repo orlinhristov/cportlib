@@ -25,7 +25,6 @@ class completion_port;
  * Every object of this type will start as many worker threads as configured.
  * The default number of workers is equal to the number of concurrent
  *  threads supported by the system.
- *
  */
 class task_scheduler {
 public:
@@ -135,7 +134,10 @@ public:
     std::size_t packaged_tasks() const;
 
 protected:
+    /// Get a const reference to the implementation type
     const impl_type& impl() const;
+
+    /// Get a reference to the implementation type
     impl_type& impl();
 private:
     template<typename T>

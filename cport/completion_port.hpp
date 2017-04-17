@@ -18,7 +18,14 @@ namespace cport {
 
 class generic_error;
 
-/// Invokes completion handlers on callers threads. 
+/// Invokes completion handlers on callers threads.
+/**
+ * The completion_port is responsible to invoke completion handlers (Callable objects).
+ *  Invocation of ready completion handlers is initiated by calling any of the wait(),
+ *  wait_one(), run(), run_one(), pull() or pull_one() methods. All these methods are
+ *  thread-safe and could be called from more than one threads. Thus more than one ready
+ *  completion handlers could be called simultaneously.
+ */
 class completion_port {
 public:
 
@@ -37,32 +44,43 @@ public:
     /// Disable assignment operator.
     completion_port& operator=(const completion_port&) = delete;
 
+	/// Create a handler wrapper, associated with the completion_port instance.
+	/**
+	 * Enforce completion port to wait for the wrapped handler to be posted.
+	 *
+	 * @param h A completion handler to be invoked.
+	 *
+	 * @returns wrapped completion handler.
+	 */
+    //template <typename Handler>
+    //completion_handler_wrapper<Handler> wrap(Handler&& h);
+
     /// Dispatch a completion handler.
     /**
-    * Post a completion handler to be invoked by any of the threads
-    *  blocked on wait(), wait_one(), run() and run_one() methods or
-    *  when methods poll() or poll_one() are called.
-    *  This handler will be called before any other handler posted
-    *  using post() method.
-    *
-    * @param h A completion handler to be invoked.
-    *
-    * @param e An error to be passed when the handler is invoked.
-    */
+     * Post a completion handler to be invoked by any of the threads
+     *  blocked on wait(), wait_one(), run() and run_one() methods or
+     *  when methods poll() or poll_one() are called.
+     *  This handler will be called before any other handler posted
+     *  using post() method.
+     *
+     * @param h A completion handler to be invoked.
+     *
+     * @param e An error to be passed when the handler is invoked.
+     */
     template <typename Handler>
     void dispatch(Handler&& h, const generic_error& e);
 
     /// Dispatch a completion handler.
     /**
-    * Post a completion handler to be invoked by any of the threads
-    *  blocked on wait(), wait_one(), run() and run_one() methods or
-    *  when methods poll() or poll_one() are called.
-    *  This handler will be called before any other handler posted
-    *  using post() method.
-    *
-    * @param h A completion handler to be invoked.
-    *
-    */
+     * Post a completion handler to be invoked by any of the threads
+     *  blocked on wait(), wait_one(), run() and run_one() methods or
+     *  when methods poll() or poll_one() are called.
+     *  This handler will be called before any other handler posted
+     *  using post() method.
+     *
+     * @param h A completion handler to be invoked.
+     *
+     */
     template <typename Handler>
     void dispatch(Handler&& h);
     
@@ -92,21 +110,21 @@ public:
 
     /// Call a completion handler.
     /**
-    * Call a completion handler in calling thread.
-    *
-    * @param h The completion handler to be invoked.
-    *
-    * @param e An error to be passed when the handler is invoked.
-    */
+     * Call a completion handler in calling thread.
+     *
+     * @param h The completion handler to be invoked.
+     *
+     * @param e An error to be passed when the handler is invoked.
+     */
     template <typename Handler>
     void call(Handler&& h, const generic_error& e);
 
     /// Call a completion handler.
     /**
-    * Call a completion handler in calling thread.
-    *
-    * @param h The completion handler to be invoked.
-    */
+     * Call a completion handler in calling thread.
+     *
+     * @param h The completion handler to be invoked.
+     */
     template <typename Handler>
     void call(Handler&& h);
 
@@ -164,8 +182,7 @@ public:
      */
     bool pull_one();
 
-    /// Interrupt all threads blocked on wait(), wait_one(),
-    ///  run() and run_one() methods.
+    /// Interrupt all threads blocked on wait(), wait_one(), run() and run_one() methods.
     void stop();
 
     /// Test if the port is stopped.
@@ -181,10 +198,17 @@ public:
     /// Get the number of completion handlers, ready to be called.
     std::size_t ready_handlers() const;
 
+    /// Get the number of threads blocked on wait(), wait_one(), run() or run_one() methods
+    std::size_t blocked_threads() const;
+
     /// The implementation type.
     typedef detail::completion_port_impl impl_type;
 protected:
+
+    /// Get a const reference to the implementation type
     const impl_type& impl() const;
+
+    /// Get a reference to the implementation type
     impl_type& impl();
 private:
     template<typename T>

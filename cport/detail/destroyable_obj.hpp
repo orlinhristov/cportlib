@@ -23,16 +23,14 @@ public:
     }
 
 protected:
-    typedef std::function<void(destroyable_obj *)> destroy_helper_type;
+    using destroy_helper_type = std::function<void(destroyable_obj*)>;
 
     explicit destroyable_obj(destroy_helper_type helper)
         : destroy_helper_(helper)
     {
     }
 
-    ~destroyable_obj()
-    {
-    }
+    ~destroyable_obj() = default;
 
 private:
     destroy_helper_type destroy_helper_;

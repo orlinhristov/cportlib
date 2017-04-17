@@ -18,9 +18,9 @@ namespace cport {
 namespace detail {
 
 class completion_handler_base : public destroyable_obj {
-    typedef std::function<
-        void(completion_handler_base *,
-             const generic_error &)> invoke_helper_type;
+    using invoke_helper_type = std::function<
+        void(completion_handler_base*, const generic_error&)
+    >;
 public:
     completion_handler_base(invoke_helper_type invoke_helper,
                             destroy_helper_type destroy_helper,
@@ -44,9 +44,7 @@ public:
     }
 
 protected:
-    ~completion_handler_base()
-    {
-    }
+    ~completion_handler_base() = default;
 
 private:
     invoke_helper_type invoke_helper_;

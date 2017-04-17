@@ -50,6 +50,8 @@ public:
 
     std::size_t ready_handlers() const;
 
+    std::size_t blocked_threads() const;
+
     CPORT_DECL_TYPE std::size_t next_operation_id();
     
 private:
@@ -58,6 +60,8 @@ private:
     CPORT_DECL_TYPE bool do_one(std::unique_lock<std::mutex> &lock);
 
     bool stopped_;
+    // Number of threads blocked on wait_one operation
+    std::size_t run_one_threads_;
     // Number of threads blocked on wait_one operation
     std::size_t wait_one_threads_;
     std::size_t queued_ops_;

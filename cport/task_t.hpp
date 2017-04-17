@@ -18,6 +18,7 @@ namespace cport {
 /// Encapsulates an operation identifier assigned to a scheduled task.
 class task_t {
 public:
+    /// The type of the operation identifier.
     typedef detail::operation_id value_type;
 
     /// Construct a task_t object from an operation identifier
@@ -71,11 +72,13 @@ public:
     }
 
 #ifdef CPORT_ENABLE_TASK_STATUS
+    /// Get current completion status.
     completion_status get_status() const
     {
         return id_.get_status();
     }
 
+    /// Block the calling thread until the task completes.
     void wait()
     {
         id_.wait();

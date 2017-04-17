@@ -28,11 +28,16 @@ class task_scheduler;
 class generic_error;
 
 /// Provides a mechanism that guarantees sequential execution of tasks.
+/**
+ * This class is a wrapper of the task_scheduler. It provides an interface
+ *  for task enqueuing, which guarantees that the last enqueued task will
+ *  not be processed until the completion handler of the previous one is invoked.
+ */
 class task_channel : public std::enable_shared_from_this<task_channel> {
 
     explicit CPORT_DECL_TYPE task_channel(task_scheduler &ts);
 public:
-
+    /// The task channel shared pointer type.
     typedef std::shared_ptr<task_channel> shared_ptr;
 
     /// Constructs an object of type task_channel wrapped in a std::shared_ptr.
@@ -56,7 +61,7 @@ public:
     /// Add a task before the current first task and return immediately.
     /**
      * The completion handler is posted to the completion port
-     * after task execution completes.
+     *  after task execution completes.
      *
      * @param th A task handler to be executed asynchronously.
      *
@@ -71,7 +76,7 @@ public:
     /// Add a task after the current last task and return immediately.
     /**
      * The completion handler is posted to the completion port
-     * after task execution completes.
+     *  after task execution completes.
      *
      * @param th A task handler to be executed asynchronously.
      *
@@ -85,43 +90,43 @@ public:
 
     /// Add a task before the current first task and return immediately.
     /**
-    *
-    * @param h A task handler to be executed asynchronously.
-    *
-    * @returns A task identifier
-    */
+     *
+     * @param h A task handler to be executed asynchronously.
+     *
+     * @returns A task identifier
+     */
     template <typename Handler>
     task_t enqueue_front(Handler&& h);
 
     /// Add a task after the current last task and return immediately.
     /**
-    *
-    * @param h A task handler to be executed asynchronously.
-    *
-    * @returns A task identifier
-    */
+     *
+     * @param h A task handler to be executed asynchronously.
+     *
+     * @returns A task identifier
+     */
     template <typename Handler>
     task_t enqueue_back(Handler&& h);
 
     /// Cancel specific task.
     /**
-    * Completion handler is called with operation_aborted error code.
-    * The method call has no effect if the task's handler is already executed.
-    *
-    * @param task An identifier to a task to be canceled.
-    *
-    * @returns true if the task associated with the task identifier
-    *  was canceled.
-    */
+     * Completion handler is called with operation_aborted error code.
+     * The method call has no effect if the task's handler is already executed.
+     *
+     * @param task An identifier to a task to be canceled.
+     *
+     * @returns true if the task associated with the task identifier
+     *  was canceled.
+     */
     CPORT_DECL_TYPE bool cancel(const task_t &task);
 
     /// Cancel all outstanding tasks.
     /**
-    * Completion handler of each task is called
-    * with operation_aborted error code.
-    *
-    * @returns The number of tasks canceled.
-    */
+     * Completion handler of each task is called
+     *  with operation_aborted error code.
+     *
+     * @returns The number of tasks canceled.
+     */
     CPORT_DECL_TYPE std::size_t cancel_all();
 
     /// Get the number of outstanding tasks scheduled through this channel.

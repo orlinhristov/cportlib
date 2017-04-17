@@ -18,9 +18,6 @@ namespace detail {
 
 struct null_handler_t
 {
-    null_handler_t()
-    {
-    }
     void operator()(const generic_error &) const
     {
     }

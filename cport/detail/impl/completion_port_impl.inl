@@ -66,6 +66,12 @@ inline std::size_t completion_port_impl::ready_handlers() const
     return handlers_.size();
 }
 
+inline std::size_t completion_port_impl::blocked_threads() const
+{
+    std::unique_lock<std::mutex> lock(guard_);
+    return wait_one_threads_ + run_one_threads_;
+}
+
 } // namespace detail
 
 } // namespace cport

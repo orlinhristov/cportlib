@@ -19,16 +19,19 @@ namespace util {
 /// Used to protect callable object from evaluation.
 template <typename F>
 struct protected_t {
+    /// Construct a callable object, protected from evaluation.
     explicit protected_t(const F& f) 
         : f_(f)
     {
     }
 
+    /// Construct a callable object, protected from evaluation.
     explicit protected_t(F&& f)
         : f_(std::move(f))
     {
     }
 
+    /// Invoke the stored callable object with parameter args.
     template <typename... Args>
     void operator()(Args&&... args)
     {

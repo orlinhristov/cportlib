@@ -69,7 +69,7 @@ public:
 
     /// Block the caller thread until this event is signaled or until specified time point has been reached.
     /**
-     * @param d The time point to wait until the event, to be signaled.
+     * @param tp The time point to wait until the event, to be signaled.
      */
     template <typename Clock, typename Duration>
     std::cv_status wait_until(const std::chrono::time_point<Clock, Duration>& tp)

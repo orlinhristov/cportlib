@@ -18,6 +18,23 @@ namespace cport {
 
 namespace detail {
 
+class scope_ref_counter
+{
+public:
+    explicit scope_ref_counter(std::size_t& counter)
+        : counter_(counter)
+    {
+        ++counter_;
+    }
+
+    ~scope_ref_counter()
+    {
+        --counter_;
+    }
+private:
+    std::size_t& counter_;
+};
+
 completion_port_impl::completion_port_impl() 
 : stopped_(false)
 , wait_one_threads_(0)
@@ -41,9 +58,8 @@ bool completion_port_impl::wait_one()
 {
     std::unique_lock<std::mutex> lock(guard_);
     while (!stopped_ && handlers_.empty() && queued_ops_> 0) {
-        ++wait_one_threads_;
+        scope_ref_counter c(wait_one_threads_);
         cond_.wait(lock);
-        --wait_one_threads_;
     }
     return do_one(lock);
 }
@@ -52,6 +68,7 @@ bool completion_port_impl::run_one()
 {
     std::unique_lock<std::mutex> lock(guard_);
     while (!stopped_ && handlers_.empty()) {
+        scope_ref_counter c(run_one_threads_);
         cond_.wait(lock);
     }
     return do_one(lock);

@@ -118,6 +118,11 @@ inline std::size_t completion_port::ready_handlers() const
     return impl().ready_handlers();
 }
 
+inline std::size_t completion_port::blocked_threads() const
+{
+    return impl().blocked_threads();
+}
+
 inline const completion_port::impl_type& completion_port::impl() const
 {
     return impl_;

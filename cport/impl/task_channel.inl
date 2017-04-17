@@ -75,9 +75,12 @@ inline task_t task_channel::enqueue_task(TaskHandler&& th, CompletionHandler&& c
     const detail::operation_id opid(port.next_operation_id());
     if (opid.valid())
     {
-        typedef util::protected_t<typename std::remove_reference<TaskHandler>::type> TaskHandlerP;
-        typedef util::protected_t<typename std::remove_reference<CompletionHandler>::type> CompletionHandlerP;
-        auto* wrapper = detail::create_task_handler(
+        using TaskHandlerP = 
+            util::protected_t<typename std::remove_reference<TaskHandler>::type>;
+        using  CompletionHandlerP =
+            util::protected_t<typename std::remove_reference<CompletionHandler>::type>;
+
+        auto wrapper = detail::create_task_handler(
             std::bind(&task_channel::task_handler_proxy<TaskHandlerP>,
                 shared_from_this(),
                 placeholders::error,
