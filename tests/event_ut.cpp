@@ -6,7 +6,7 @@
 
 using namespace cport::util;
 
-TEST_CASE("Block current thread on wait_for(), until timed out")
+TEST_CASE("Block current thread on wait_for(), until timed out", "[event]")
 {
     event e;
 
@@ -19,7 +19,7 @@ TEST_CASE("Block current thread on wait_for(), until timed out")
     REQUIRE_FALSE(e.signaled());
 }
 
-TEST_CASE("Block current thread on wait_until(), until timed out")
+TEST_CASE("Block current thread on wait_until(), until timed out", "[event]")
 {
     event e;
 
@@ -32,7 +32,7 @@ TEST_CASE("Block current thread on wait_until(), until timed out")
     REQUIRE_FALSE(e.signaled());
 }
 
-TEST_CASE("Block current thread on wait(), until signaled")
+TEST_CASE("Block current thread on wait(), until signaled", "[event]")
 {
     event e;
 
@@ -51,7 +51,7 @@ TEST_CASE("Block current thread on wait(), until signaled")
     REQUIRE_FALSE(e.signaled());
 }
 
-TEST_CASE("Block current thread on wait_for(), until signaled")
+TEST_CASE("Block current thread on wait_for(), until signaled", "[event]")
 {
     event e;
 
@@ -72,7 +72,7 @@ TEST_CASE("Block current thread on wait_for(), until signaled")
     REQUIRE(std::cv_status::no_timeout == result);
 }
 
-TEST_CASE("Block current thread on wait_until(), until signaled")
+TEST_CASE("Block current thread on wait_until(), until signaled", "[event]")
 {
     event e;
 
@@ -93,7 +93,7 @@ TEST_CASE("Block current thread on wait_until(), until signaled")
     REQUIRE_FALSE(e.signaled());
 }
 
-TEST_CASE("Block multiple threads on event until all signaled")
+TEST_CASE("Block multiple threads on event until all signaled", "[event]")
 {
     event e;
 
@@ -124,7 +124,7 @@ TEST_CASE("Block multiple threads on event until all signaled")
     REQUIRE(concurrency == count);
 }
 
-TEST_CASE("Block multiple threads on event until one is signaled")
+TEST_CASE("Block multiple threads on event until one is signaled", "[event]")
 {
     event e;
 
@@ -135,7 +135,7 @@ TEST_CASE("Block multiple threads on event until one is signaled")
     std::atomic<unsigned> count{ 0 };
 
     thread_group tg([&](){
-        const auto result = e.wait_for(std::chrono::seconds(5));
+        const auto result = e.wait_for(std::chrono::seconds(2));
         if (std::cv_status::timeout != result)
             ++count;
     }, concurrency);

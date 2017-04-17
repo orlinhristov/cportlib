@@ -3,7 +3,7 @@
 
 using namespace cport;
 
-TEST_CASE("Wrapped handler will enforce the port to block on wait() method", "cportlib")
+TEST_CASE("Wrapped handler will enforce the port to block on wait() method", "[completion_handler_wrapper]")
 {
     completion_port cp;
 

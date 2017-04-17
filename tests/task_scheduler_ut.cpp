@@ -10,7 +10,7 @@
 using namespace cport;
 using namespace cport::util;
 
-TEST_CASE("By default the task scheduler runs number of workers equal to the concurrency hint", "cportlib")
+TEST_CASE("By default the task scheduler runs number of workers equal to the concurrency hint", "[task_scheduler]")
 {
     std::atomic<unsigned> workers{ 0u };
     const unsigned c = std::thread::hardware_concurrency();
@@ -21,9 +21,10 @@ TEST_CASE("By default the task scheduler runs number of workers equal to the con
     });
 
     REQUIRE(c == workers);
+    REQUIRE(std::addressof(p) == std::addressof(ts.port()));
 }
 
-TEST_CASE("The task scheduler starts as much workers as initialized", "cportlib")
+TEST_CASE("The task scheduler starts as much workers as initialized", "[task_scheduler]")
 {
     std::atomic<unsigned> workers{ 0u };
     const unsigned c = 13;
@@ -34,9 +35,10 @@ TEST_CASE("The task scheduler starts as much workers as initialized", "cportlib"
     });
 
     REQUIRE(c == workers);
+    REQUIRE(std::addressof(p) == std::addressof(ts.port()));
 }
 
-TEST_CASE("Scheduled task and completion handlers are called", "cportlib")
+TEST_CASE("Scheduled task and completion handlers are called", "[task_scheduler]")
 {
     completion_port p;
     task_scheduler ts(p);
@@ -67,19 +69,19 @@ TEST_CASE("Scheduled task and completion handlers are called", "cportlib")
     REQUIRE(compHandlerCalled);
 }
 
-TEST_CASE("Scheduled task can be canceled if not in processing yet", "cportlib")
+TEST_CASE("Scheduled task can be canceled if not in processing yet", "[task_scheduler]")
 {
     completion_port p;
     task_scheduler ts(p, 1);
 
     event e1, e2;
 
-    ts.async([&](generic_error&) {
+    task_t t1 = ts.async([&](generic_error&) {
         e2.notify_all();
         e1.wait();
     });
 
-    task_t t = ts.async(
+    task_t t2 = ts.async(
         [](generic_error&) {}
         ,
         [&](const generic_error& ge){ 
@@ -92,14 +94,64 @@ TEST_CASE("Scheduled task can be canceled if not in processing yet", "cportlib")
 
     REQUIRE(1 == ts.packaged_tasks());
 
-    const auto canceled = ts.cancel(t);
+    auto canceled = ts.cancel(t1);
+
+    REQUIRE_FALSE(canceled);
+
+    canceled = ts.cancel(t2);
 
     REQUIRE(canceled);
 
     p.wait();
 }
 
-TEST_CASE("A task can not be scheduled if the port is stopped", "cportlib")
+TEST_CASE("All tasks that are not processing can be canceled", "[task_scheduler]")
+{
+    completion_port p;
+    task_scheduler ts(p, 1);
+
+    event e1, e2;
+
+    task_t t1 = ts.async([&](generic_error&) {
+        e2.notify_all();
+        e1.wait();
+    });
+
+    e2.wait();
+
+    std::array<bool, 10> callFlags;
+    callFlags.assign(false);
+
+    for (size_t i = 0; i < callFlags.size(); ++i)
+    {
+        ts.async(
+            [&callFlags, i](generic_error&) {
+                callFlags[i] = true;
+            }
+            ,
+            [&](const generic_error& ge){
+                REQUIRE(ge.code() == operation_aborted);
+            }
+        );
+    }
+
+    REQUIRE(callFlags.size() == ts.packaged_tasks());
+
+    auto canceled = ts.cancel_all();
+
+    REQUIRE(callFlags.size() == canceled);
+
+    for (auto called : callFlags)
+    {
+        REQUIRE_FALSE(called);
+    }
+
+    e1.notify_all();
+
+    p.wait();
+}
+
+TEST_CASE("A task can not be scheduled if the port is stopped", "[task_scheduler]")
 {
     completion_port p;
     task_scheduler ts(p);
@@ -127,7 +179,7 @@ TEST_CASE("A task can not be scheduled if the port is stopped", "cportlib")
     REQUIRE_FALSE(compHandlerCalled);
 }
 
-TEST_CASE("The scheduled tasks are processed simultaneously", "cportlib")
+TEST_CASE("The scheduled tasks are processed simultaneously", "[task_scheduler]")
 {
     std::vector<std::string> src;
     std::array<char, 1024> buf;

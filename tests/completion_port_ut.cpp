@@ -6,7 +6,7 @@
 using namespace cport;
 using namespace cport::util;
 
-TEST_CASE("completion_port", "cportlib")
+TEST_CASE("Test cases related to the completion port", "[completion_port]")
 {
     completion_port cp;
 
