@@ -11,7 +11,6 @@
 //
 
 #include <cport/detail/operation_id.hpp>
-#include <algorithm>
 
 namespace cport {
 
