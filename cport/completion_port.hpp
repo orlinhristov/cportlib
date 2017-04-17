@@ -44,17 +44,6 @@ public:
     /// Disable assignment operator.
     completion_port& operator=(const completion_port&) = delete;
 
-	/// Create a handler wrapper, associated with the completion_port instance.
-	/**
-	 * Enforce completion port to wait for the wrapped handler to be posted.
-	 *
-	 * @param h A completion handler to be invoked.
-	 *
-	 * @returns wrapped completion handler.
-	 */
-    //template <typename Handler>
-    //completion_handler_wrapper<Handler> wrap(Handler&& h);
-
     /// Dispatch a completion handler.
     /**
      * Post a completion handler to be invoked by any of the threads
