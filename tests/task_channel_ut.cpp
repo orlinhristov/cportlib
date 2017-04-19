@@ -136,7 +136,7 @@ TEST_CASE("All enqueued tasks that are not processing can be canceled", "[task_c
     });
 
     std::array<bool, 10> callFlags;
-    callFlags.assign(false);
+    callFlags.fill(false);
 
     for (size_t i = 0; i < callFlags.size(); ++i)
     {

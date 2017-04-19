@@ -120,7 +120,7 @@ TEST_CASE("All tasks that are not processing can be canceled", "[task_scheduler]
     e2.wait();
 
     std::array<bool, 10> callFlags;
-    callFlags.assign(false);
+    callFlags.fill(false);
 
     for (size_t i = 0; i < callFlags.size(); ++i)
     {
