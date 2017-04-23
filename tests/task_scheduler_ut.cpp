@@ -15,13 +15,16 @@ TEST_CASE("By default the task scheduler runs number of workers equal to the con
     std::atomic<unsigned> workers{ 0u };
     const unsigned c = std::thread::hardware_concurrency();
     completion_port p;
-    task_scheduler ts(p, [&](task_scheduler::worker_func_prototype f) {
-        ++workers;
-        f();
-    });
+    {
+        task_scheduler ts(p, [&](task_scheduler::worker_func_prototype f) {
+            ++workers;
+            f();
+        });
+
+        REQUIRE(std::addressof(p) == std::addressof(ts.port()));
+    }
 
     REQUIRE(c == workers);
-    REQUIRE(std::addressof(p) == std::addressof(ts.port()));
 }
 
 TEST_CASE("The task scheduler starts as much workers as initialized", "[task_scheduler]")
@@ -29,13 +32,15 @@ TEST_CASE("The task scheduler starts as much workers as initialized", "[task_sch
     std::atomic<unsigned> workers{ 0u };
     const unsigned c = 13;
     completion_port p;
-    task_scheduler ts(p, c, [&](task_scheduler::worker_func_prototype f) {
-        ++workers;
-        f();
-    });
+    {
+        task_scheduler ts(p, c, [&](task_scheduler::worker_func_prototype f) {
+            ++workers;
+            f();
+        });
+        REQUIRE(std::addressof(p) == std::addressof(ts.port()));
+    }
 
     REQUIRE(c == workers);
-    REQUIRE(std::addressof(p) == std::addressof(ts.port()));
 }
 
 TEST_CASE("Scheduled task and completion handlers are called", "[task_scheduler]")

@@ -98,9 +98,10 @@ TEST_CASE("Enqueued task can be canceled if not in processing yet", "[task_chann
     task_scheduler ts(p, 1);
     task_channel::shared_ptr tc = task_channel::make_shared(ts);
 
-    // This task will delay execution of the next handlers
-    // until completion_port::wait() is called.
-    task_t t1 = tc->enqueue_back([&](const generic_error& e){
+    event e;
+
+    task_t t1 = tc->enqueue_back([&](const generic_error& ge){
+        e.notify_all();
     });
 
     task_t t2 = tc->enqueue_back(
@@ -110,6 +111,8 @@ TEST_CASE("Enqueued task can be canceled if not in processing yet", "[task_chann
             REQUIRE(ge.code() == operation_aborted);
         }
     );
+
+    e.wait();
 
     REQUIRE(1 == tc->enqueued_tasks());
 
@@ -130,10 +133,13 @@ TEST_CASE("All enqueued tasks that are not processing can be canceled", "[task_c
     task_scheduler ts(p, 1);
     task_channel::shared_ptr tc = task_channel::make_shared(ts);
 
-    // This task will delay execution of the next handlers
-    // until completion_port::wait() is called.
-    task_t t1 = tc->enqueue_back([&](const generic_error& e){
+    event e;
+
+    task_t t1 = tc->enqueue_back([&](const generic_error& ge){
+	e.notify_all();
     });
+
+    e.wait();
 
     std::array<bool, 10> callFlags;
     callFlags.fill(false);
