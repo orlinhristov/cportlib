@@ -73,8 +73,6 @@ TEST_CASE("Wrapped handler will enforce the port to block on wait() method", "[c
 
         auto wrapper2 = std::move(wrapper);
 
-        bool thrown = false;
-
         REQUIRE_THROWS_AS(wrapper2(ge), std::bad_function_call&);
     }
 
