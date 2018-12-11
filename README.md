@@ -3,7 +3,7 @@ cportlib
 
 A C++ library that manages parallel task processing in concurrent environment. It provides mechanism for asynchronous execution of multiple task handlers and invocation of callback handlers after task completion.
 
-Visit https://github.com/orlinhristov/cportlib/wiki for more information about the product.
+Visit https://github.com/orlinhristov/cportlib/wiki for more information about the library.
 
 How to compile
 ==============
