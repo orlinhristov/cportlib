@@ -15,7 +15,7 @@ int main()
 
     completion_port p;
 
-    // initialize the task_scheduler object with one worker thread to guarentee
+    // initialize the task_scheduler object with one worker thread to guarantee
     //  that the scheduled tasks will be executed in sequential order. 
     task_scheduler ts(p, 1);
 
