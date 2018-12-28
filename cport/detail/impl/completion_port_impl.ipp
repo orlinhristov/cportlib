@@ -37,8 +37,8 @@ private:
 
 completion_port_impl::completion_port_impl() 
 : stopped_(false)
-, wait_one_threads_(0)
 , run_one_threads_(0)
+, wait_one_threads_(0)
 , queued_ops_(0)
 , seqno_(0)
 {
