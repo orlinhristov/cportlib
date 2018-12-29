@@ -46,7 +46,7 @@ TEST_CASE("Wrapped handler will enforce the port to block on wait() method", "[c
     {
         auto wrapper2 = std::move(wrapper);
 
-        REQUIRE_THROWS_AS(wrapper(ge), std::bad_function_call&);
+        REQUIRE_THROWS_AS(wrapper(ge), std::bad_function_call);
 
         wrapper2(ge);
 
@@ -73,7 +73,7 @@ TEST_CASE("Wrapped handler will enforce the port to block on wait() method", "[c
 
         auto wrapper2 = std::move(wrapper);
 
-        REQUIRE_THROWS_AS(wrapper2(ge), std::bad_function_call&);
+        REQUIRE_THROWS_AS(wrapper2(ge), std::bad_function_call);
     }
 
     SECTION("Completion handler is not called when wrapper is destoyed")
