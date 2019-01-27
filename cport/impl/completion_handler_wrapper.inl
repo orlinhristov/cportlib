@@ -36,6 +36,12 @@ inline completion_handler_wrapper<Handler> wrap_completion_handler(Handler&& h, 
 }
 
 template <typename Handler>
+inline completion_handler_wrapper<Handler>::completion_handler_wrapper()
+    : port_impl_(nullptr)
+{
+}
+
+template <typename Handler>
 inline completion_handler_wrapper<Handler>::completion_handler_wrapper(Handler&& handler, completion_port& port)
     : port_impl_(&detail::get_impl(port))
     , op_id_(port_impl_->next_operation_id())
@@ -78,6 +84,12 @@ inline void completion_handler_wrapper<Handler>::swap(completion_handler_wrapper
     swap(port_impl_, rhs.port_impl_);
     swap(op_id_, rhs.op_id_);
     swap(handler_, rhs.handler_);
+}
+
+template <typename Handler>
+inline completion_handler_wrapper<Handler>::operator bool() const
+{
+    return op_id_.valid();
 }
 
 template <typename Handler>

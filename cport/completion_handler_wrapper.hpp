@@ -32,6 +32,9 @@ namespace detail {
 template <typename Handler>
 class completion_handler_wrapper {
 public:
+    /// Construct an empty wrapper.
+    completion_handler_wrapper();
+
     /// Construct a completion handler wrapper.
     /**
      *
@@ -58,6 +61,9 @@ public:
 
     /// Swap handlers represented by this wrapper and rhs
     void swap(completion_handler_wrapper& rhs);
+
+    /// Test if the wrapper has a valid handler
+    explicit operator bool() const;
 
     /// Invoke the handler stored in this wrapper.
     /**
