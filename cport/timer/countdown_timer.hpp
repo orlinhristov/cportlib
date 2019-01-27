@@ -5,15 +5,6 @@
 
 /*
 TODO:
- * Think of moving all the data members is copyable structure to avoid race
-  condition when the timer object is destroyed before the callback invocation
-
- * The timer cancelation should call the callback, e.g. call timer_service::remove_timer
-    with notify
-
- * Change the finish callback to accept generic_erro instead of bool flag. 
-
- * Think of how to round the remainig time (current_point += floor(mod(current_point, interval) + interval/2))
 */
 
 namespace cport
@@ -34,14 +25,18 @@ public:
 
 	using clock = typename TimerService::clock;
 
-	using finish_callback = std::function<void(generic_error)>;
+	using finish_callback = std::function<
+        void(const generic_error&, const timer_id&)
+    >;
 
-	using tick_callback = std::function<void(time_unit)>;
+	using tick_callback = std::function<
+        void(const timer_id&, const time_unit&)
+    >;
 
 	countdown_timer(
 		timer_service& service,
-		finish_callback fcb,
-		tick_callback  tcb
+		finish_callback finish_cb,
+		tick_callback  tick_cb
 	);
 
 	countdown_timer(const countdown_timer&) = delete;
@@ -58,23 +53,26 @@ public:
 	countdown_timer& cancel();
 
 private:
-	timer_id timer_id_;
+    struct timer_data
+    {
+        finish_callback finish_cb;
+	    tick_callback   tick_cb;
+	    time_point      end_point;
+    };
+
 	timer_service& service_;
-	finish_callback finish_callback_;
-	tick_callback tick_callback_;
-	time_unit duration_;
-	time_unit interval_;
-	time_point end_point_;
+    timer_id       timer_id_;
+    timer_data     data_;
 };
 
 template <typename ClockType>
 countdown_timer<typename ClockType>::countdown_timer(
 	timer_service& service,
-	finish_callback finish_callback,
-	tick_callback tick_callback)
-	: service_(service)
-	, finish_callback_(finish_callback)
-	, tick_callback_(tick_callback)
+	finish_callback finish_cb,
+	tick_callback tick_cb)
+    : service_{ service }
+    , timer_id_{ }
+    , data_{ finish_cb, tick_cb, {} }
 {
 }
 
@@ -89,26 +87,22 @@ countdown_timer<typename ClockType>& countdown_timer<typename ClockType>::start(
 	time_unit duration,
 	time_unit interval)
 {
-	end_point_ = clock::now() + duration;
+	data_.end_point = clock::now() + duration;
 
-	duration_ = duration;
-
-	interval_ = interval;
-
-	timer_id_ = service_.add_timer(interval,
-		[this](const generic_error& e, const time_point& tp)
+    timer_id_ = service_.add_timer(interval, [&service = service_, data = data_]
+    (const generic_error& ge, const timer_id& tid, const time_point& tp)
 	{
-		if (!e && tp < end_point_)
+		if (!ge && tp < data.end_point)
 		{
 			using namespace std::chrono;
 
-			tick_callback_(duration_cast<time_unit>(end_point_ - tp));
+			data.tick_cb(tid, duration_cast<time_unit>(data.end_point - tp));
 		}
 		else
 		{
-			service_.remove_timer(timer_id_, false);
+			service.remove_timer(tid, false);
 
-			finish_callback_(e);
+			data.finish_cb(ge, tid);
 		}
 	});
 
@@ -118,11 +112,13 @@ countdown_timer<typename ClockType>& countdown_timer<typename ClockType>::start(
 template <typename ClockType>
 countdown_timer<typename ClockType>& countdown_timer<typename ClockType>::cancel()
 {
-	if (timer_id_ != timer_id{})
+    static const auto invalid_timer_id = timer_id{};
+
+	if (timer_id_ != invalid_timer_id)
 	{
 		service_.remove_timer(timer_id_, true);
 
-		timer_id_ = timer_id{};
+		timer_id_ = invalid_timer_id;
 	}
 
 	return *this;

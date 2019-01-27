@@ -16,9 +16,6 @@ TODO:
  * Consider using util::event instead of directly using codition_variable to avoid
   the race condition at thread start.
 
- * Think of using completion_port_wrapper to ensure completion_port::wait() like
-  methods will block while there are registered timers.
- 
  * Make sure heap related std functions are properly used
  
  */
@@ -45,7 +42,7 @@ public:
 	using time_unit = typename ClockType::duration;
 
 	using timer_callback = std::function<
-		void(const generic_error&,const time_point&)
+		void(const generic_error&, const timer_id&, const time_point&)
 	>;
 
 	using timer_context = detail::timer_context<
@@ -238,7 +235,7 @@ private:
 		{
 			tc.next_point += tc.interval;
 
-			notify(tc.callback, generic_error{}, current_point);
+			notify(tc.callback, generic_error{}, tc.id, current_point);
 
 			std::pop_heap(c.begin(), c.end(), heap_pred);
 
@@ -261,17 +258,18 @@ private:
 
 		static const time_point null_point{};
 
-		notify(tc.callback, abort_error, null_point);
+		notify(tc.callback, abort_error, tc.id, null_point);
 	}
 
 	void notify(
 		const timer_callback& callback,
 		const generic_error& e,
+        const timer_id& tid,
 		const time_point& tp)
 	{
-		port_.post([callback, tp](const generic_error& e)
+		port_.post([callback, tid, tp](const generic_error& e)
 		{
-			callback(e, tp);
+			callback(e, tid, tp);
 		}, e);
 	}
 
@@ -299,7 +297,11 @@ private:
 
 	completion_port& port_;
 
-	completion_handler_wrapper<cport::detail::null_handler_t> port_release_wrapper_;
+    using handler_wrapper = completion_handler_wrapper<
+        cport::detail::null_handler_t
+    >;
+    
+    handler_wrapper port_release_wrapper_;
 
 	bool stop_thread_ = false;
 };

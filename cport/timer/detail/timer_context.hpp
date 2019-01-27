@@ -21,7 +21,7 @@ struct timer_context
 	using time_unit = TimeUnit;
 
 	timer_context(timer_id id, TimeUnit interval, Callback callback)
-		: id(id), next_point(next_point), interval(interval), callback(callback)
+		: id(id), next_point(), interval(interval), callback(callback)
 	{
 	}
 
