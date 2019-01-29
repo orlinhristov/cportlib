@@ -1,131 +1,94 @@
-#ifndef COUNTDOWN_TIMER_HPP_INCLUDED
-#define COUNTDOWN_TIMER_HPP_INCLUDED
+#ifndef __COUNTDOWN_TIMER_HPP__
+#define __COUNTDOWN_TIMER_HPP__
 
-#include <functional>
+#include <cport/timer/detail/countdown_timer_impl.hpp>
 
-/*
-TODO:
-*/
+namespace cport {
 
-namespace cport
-{
+namespace timer {
 
-namespace timer
-{
+/// A class used to schedule a countdown timer with a specific duration
+///  and regular notifications on intervals
 
 template <typename TimerService>
-class countdown_timer
-{
+class countdown_timer {
+    /// The implementation type
+    using impl_type = detail::countdown_timer_impl<TimerService>;
 public:
-	using timer_service = TimerService;
+    /// The timer service type
+    using timer_service = typename impl_type::timer_service;
 
-	using time_unit = typename TimerService::time_unit;
+    /// The time units type
+	using time_unit = typename impl_type::time_unit;
 
-	using time_point = typename TimerService::time_point;
+    /// The time point type
+	using time_point = typename impl_type::time_point;
 
-	using clock = typename TimerService::clock;
+    /// The clock type 
+	using clock = typename impl_type::clock;
 
-	using finish_callback = std::function<
-        void(const generic_error&, const timer_id&)
-    >;
+    /// The type of the finish callback
+    using finish_callback = typename impl_type::finish_callback;
 
-	using tick_callback = std::function<
-        void(const timer_id&, const time_unit&)
-    >;
+    /// The type of the interval callback
+	using tick_callback = typename impl_type::tick_callback;
 
-	countdown_timer(
-		timer_service& service,
-		finish_callback finish_cb,
-		tick_callback  tick_cb
-	);
+    /// Construct a coundown timer
+    explicit countdown_timer(timer_service& service);
 
+    /// Disable copy constructor.
 	countdown_timer(const countdown_timer&) = delete;
 
+    /// Disable assignment operator.
 	countdown_timer& operator=(countdown_timer&) = delete;
 
+    /// Destruct the timer
+    /**
+     * Cancel the timer if it is started and not finished.
+     */
 	~countdown_timer();
 
-	countdown_timer& start(
-		time_unit duration,
-		time_unit interval
+    /// Start the countdown timer
+    /**
+     * Start a countdown that will invoke a callbacks
+     *  on regular interval and on finish.
+     *
+     * @param finish_cb A callback to be invoked when the countdown finishes.
+     * 
+     * @param tick_cb A callback to be invoked on a regilar interval.
+     *
+     * @param duration The duration after which the coundown should finish.
+     *
+     * @param interval The interval on which to receive regular notifications
+     *
+     * @returns This method will return false if the timer is already started,
+     *  otherwise it will return true.
+     */
+	bool start(
+        finish_callback finish_cb,
+        tick_callback tick_cb,
+        time_unit duration,
+        time_unit interval
 	);
 
-	countdown_timer& cancel();
+    /// Test if the timer is in progress
+    bool started() const;
+
+    /// Cancel the timer
+    /**
+     * This method has no effect if the timer was not start
+     *  or was finished
+     */
+	void cancel();
 
 private:
-    struct timer_data
-    {
-        finish_callback finish_cb;
-	    tick_callback   tick_cb;
-	    time_point      end_point;
-    };
-
-	timer_service& service_;
-    timer_id       timer_id_;
-    timer_data     data_;
+    std::shared_ptr<impl_type> impl_;
 };
-
-template <typename ClockType>
-countdown_timer<typename ClockType>::countdown_timer(
-	timer_service& service,
-	finish_callback finish_cb,
-	tick_callback tick_cb)
-    : service_{ service }
-    , timer_id_{ }
-    , data_{ finish_cb, tick_cb, {} }
-{
-}
-
-template <typename ClockType>
-countdown_timer<typename ClockType>::~countdown_timer()
-{
-	cancel();
-}
-
-template <typename ClockType>
-countdown_timer<typename ClockType>& countdown_timer<typename ClockType>::start(
-	time_unit duration,
-	time_unit interval)
-{
-	data_.end_point = clock::now() + duration;
-
-    timer_id_ = service_.add_timer(interval, [&service = service_, data = data_]
-    (const generic_error& ge, const timer_id& tid, const time_point& tp)
-	{
-		if (!ge && tp < data.end_point)
-		{
-			using namespace std::chrono;
-
-			data.tick_cb(tid, duration_cast<time_unit>(data.end_point - tp));
-		}
-		else
-		{
-			service.remove_timer(tid, false);
-
-			data.finish_cb(ge, tid);
-		}
-	});
-
-	return *this;
-}
-
-template <typename ClockType>
-countdown_timer<typename ClockType>& countdown_timer<typename ClockType>::cancel()
-{
-    static const auto invalid_timer_id = timer_id{};
-
-	if (timer_id_ != invalid_timer_id)
-	{
-		service_.remove_timer(timer_id_, true);
-
-		timer_id_ = invalid_timer_id;
-	}
-
-	return *this;
-}
 
 } // namespace timer
 
 } // namespace cport
 
-#endif //COUNTDOWN_TIMER_HPP_INCLUDED
+#include <cport/timer/impl/countdown_timer.inl>
+
+#endif //__COUNTDOWN_TIMER_HPP__

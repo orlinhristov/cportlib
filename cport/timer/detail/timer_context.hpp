@@ -1,21 +1,17 @@
-#ifndef TIMER_CONTEXT_HPP_INCLUDED
-#define TIMER_CONTEXT_HPP_INCLUDED
+#ifndef __TIMER_CONTEXT_HPP__
+#define __TIMER_CONTEXT_HPP__
 
 #include <cport/error_types.hpp>
 #include <cport/timer/timer_id.hpp>
 
-namespace cport
-{
+namespace cport {
 
-namespace timer
-{
+namespace timer {
 
-namespace detail
-{
+namespace detail {
 
 template<typename TimePoint, typename TimeUnit, typename Callback>
-struct timer_context
-{
+struct timer_context {
 	using time_point = TimePoint;
 
 	using time_unit = TimeUnit;
@@ -48,4 +44,4 @@ struct timer_context
 
 } // namespace cport
 
-#endif //TIMER_CONTEXT_HPP_INCLUDED
+#endif //__TIMER_CONTEXT_HPP__
