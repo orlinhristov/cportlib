@@ -19,34 +19,34 @@ public:
     using timer_service = typename impl_type::timer_service;
 
     /// The time units type
-	using time_unit = typename impl_type::time_unit;
+    using time_unit = typename impl_type::time_unit;
 
     /// The time point type
-	using time_point = typename impl_type::time_point;
+    using time_point = typename impl_type::time_point;
 
     /// The clock type 
-	using clock = typename impl_type::clock;
+    using clock = typename impl_type::clock;
 
     /// The type of the finish callback
     using finish_callback = typename impl_type::finish_callback;
 
     /// The type of the interval callback
-	using tick_callback = typename impl_type::tick_callback;
+    using tick_callback = typename impl_type::tick_callback;
 
     /// Construct a coundown timer
     explicit countdown_timer(timer_service& service);
 
     /// Disable copy constructor.
-	countdown_timer(const countdown_timer&) = delete;
+    countdown_timer(const countdown_timer&) = delete;
 
     /// Disable assignment operator.
-	countdown_timer& operator=(countdown_timer&) = delete;
+    countdown_timer& operator=(countdown_timer&) = delete;
 
     /// Destruct the timer
     /**
      * Cancel the timer if it is started and not finished.
      */
-	~countdown_timer();
+    ~countdown_timer();
 
     /// Start the countdown timer
     /**
@@ -64,22 +64,29 @@ public:
      * @returns This method will return false if the timer is already started,
      *  otherwise it will return true.
      */
-	bool start(
+    bool start(
         finish_callback finish_cb,
         tick_callback tick_cb,
         time_unit duration,
         time_unit interval
-	);
+    );
 
     /// Test if the timer is in progress
     bool started() const;
+
+    /// Get the identifier of the timer
+    /**
+     * @returns 0 if the timer is not started, otherwise will return
+     *  a unique identifier assigned at timer start
+     */
+    timer_id get_id() const;
 
     /// Cancel the timer
     /**
      * This method has no effect if the timer was not start
      *  or was finished
      */
-	void cancel();
+    void cancel();
 
 private:
     std::shared_ptr<impl_type> impl_;

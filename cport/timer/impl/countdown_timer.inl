@@ -23,8 +23,8 @@ template <typename TimerService>
 bool countdown_timer<TimerService>::start(
     finish_callback finish_cb,
     tick_callback tick_cb,
-	time_unit duration,
-	time_unit interval)
+    time_unit duration,
+    time_unit interval)
 {
     return impl_->start(finish_cb, tick_cb, duration, interval);
 }
@@ -33,6 +33,12 @@ template <typename TimerService>
 bool countdown_timer<TimerService>::started() const
 {
     return impl_->started();
+}
+
+template <typename TimerService>
+timer_id countdown_timer<TimerService>::get_id() const
+{
+    return impl_->get_id();
 }
 
 template <typename TimerService>

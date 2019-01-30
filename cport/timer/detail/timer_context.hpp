@@ -12,30 +12,32 @@ namespace detail {
 
 template<typename TimePoint, typename TimeUnit, typename Callback>
 struct timer_context {
-	using time_point = TimePoint;
+    using time_point = TimePoint;
 
-	using time_unit = TimeUnit;
+    using time_unit = TimeUnit;
 
-	timer_context(timer_id id, TimeUnit interval, Callback callback)
-		: id(id), next_point(), interval(interval), callback(callback)
-	{
-	}
+    timer_context(timer_id id, TimeUnit interval, Callback callback)
+        : id(id), next_point(), interval(interval), callback(callback)
+    {
+    }
 
-	timer_context(const timer_context&) = default;
+    timer_context(const timer_context&) = default;
 
-	timer_context& operator=(const timer_context&) = default;
+    timer_context& operator=(const timer_context&) = default;
 
-	timer_context(timer_context&&) = default;
+    timer_context(timer_context&&) = default;
 
-	timer_context& operator=(timer_context&&) = default;
+    timer_context& operator=(timer_context&&) = default;
 
-	timer_id id;
+    timer_id id;
 
-	time_point  next_point;
+    time_point  next_point;
 
-	time_unit   interval;
+    time_unit   interval;
 
-	Callback   callback;
+    Callback   callback;
+
+    bool paused = false;
 };
 
 } // namespace detail

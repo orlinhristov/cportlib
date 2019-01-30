@@ -9,7 +9,7 @@ namespace timer {
 
 template <typename ClockType>
 timer_service<ClockType>::timer_service(completion_port& port)
-	: port_(port)
+    : port_(port)
 {
     timer_thread_ = std::move(
         std::thread(
@@ -31,7 +31,7 @@ timer_service<ClockType>::~timer_service()
 
     if (timer_thread_.joinable())
     {
-	    timer_thread_.join();
+        timer_thread_.join();
     }
 }
 
@@ -85,21 +85,21 @@ void timer_service<ClockType>::timer_thread_routine()
         {
             if (timer_heap.empty())
             {
-                // Release all threads waiting for completion.
                 if (port_release_wrapper_)
                 {
+                    // Release all threads waiting for completion
+                    // if there is not timers
                     port_release_wrapper_();
                 }
-                // There is no timers to watch on, just block the thread until
-                // notified for new events
+                
+                // Block the thread until notified for some event
                 cond_var_.wait(lock);
             }
             else
             {
                 // We have at least one timer to watch on! Wait until
-                // the most recent time occurs or some a new event
-                // is set.
-                const auto& next_timer = timer_heap.front();
+                // the most recent time occurs or some event is set.
+                const auto& next_timer = timer_heap.back();
 
                 cond_var_.wait_until(lock, next_timer.next_point);
             }
@@ -118,6 +118,8 @@ void timer_service<ClockType>::timer_thread_routine()
 
         del_timers(timer_heap);
 
+        resume_timers(timer_heap);
+
         lock.unlock();
 
         check_ready_timers(timer_heap);
@@ -128,15 +130,12 @@ template <typename ClockType>
 template <typename Container>
 void timer_service<ClockType>::add_timers(Container& c)
 {
-    if (!new_timers_.empty())
+    for (const auto& new_timer : new_timers_)
     {
-        for (auto& new_timer : new_timers_)
-        {
-            c.push_back(new_timer);
-        }
-
-        new_timers_.clear();
+        c.push_back(new_timer);
     }
+
+    new_timers_.clear();
 }
 
 template <typename ClockType>
@@ -146,9 +145,9 @@ void timer_service<ClockType>::del_timers(Container& c)
     if (!del_timers_.empty())
     {
         const auto it = std::remove_if(c.begin(),
-            c.end(), [this](const timer_context& ctxt)
+            c.end(), [this](timer_context& ctxt)
         {
-            for (auto del_timer : del_timers_)
+            for (const auto& del_timer : del_timers_)
             {
                 if (del_timer.id == ctxt.id)
                 {
@@ -170,10 +169,62 @@ void timer_service<ClockType>::del_timers(Container& c)
 
 template <typename ClockType>
 template <typename Container>
+void timer_service<ClockType>::resume_timers(Container& c)
+{
+    for (const auto& tid : resume_timers_)
+    {
+        for (auto i = c.rbegin(), e = c.rend(); i != e; ++i)
+        {
+            if (i->id == tid)
+            {
+                assert(i->paused);
+
+                // Calc the next time point at which the timer has to be notified
+                const auto& last_point = i->next_point;
+
+                const auto& current_point = clock::now();
+
+                std::cout 
+                    << "timer " << i->id << " to be called after "
+                    << std::chrono::duration_cast<std::chrono::milliseconds>(current_point - last_point).count() 
+                    << std::endl;
+
+                const auto multiplier = int((current_point - last_point) / i->interval);
+
+                i->next_point += i->interval * multiplier;
+
+                if (i->next_point < current_point)
+                {
+                    i->next_point += i->interval;
+                }
+
+                assert(i->next_point >= current_point);
+
+                i->paused = false;
+
+                break;
+            }
+        }
+    }
+
+    resume_timers_.clear();
+}
+
+template <typename ClockType>
+template <typename Container>
 void timer_service<ClockType>::check_ready_timers(Container& c)
 {
     static const auto heap_pred = [](const timer_context& a, const timer_context& b)
     {
+        if (a.paused != b.paused)
+        {
+            if (a.paused)
+                return true;
+
+            if (b.paused)
+                return false;
+        }
+
         return !(a.next_point < b.next_point);
     };
 
@@ -190,16 +241,17 @@ void timer_service<ClockType>::check_ready_timers(Container& c)
 
     auto& tc = c.back();
 
-    while (!c.empty() && current_point >= tc.next_point)
+    while (!tc.paused && current_point >= tc.next_point)
     {
-        tc.next_point += tc.interval;
+        notify(tc, generic_error{}, current_point);
 
-        notify(tc.callback, generic_error{}, tc.id, current_point);
+        std::make_heap(c.begin(), c.end(), heap_pred);
 
         std::pop_heap(c.begin(), c.end(), heap_pred);
 
         tc = c.back();
     }
+
 }
 
 template <typename ClockType>
@@ -214,25 +266,32 @@ void timer_service<ClockType>::cancel_timers(Container& c)
 
 
 template <typename ClockType>
-void timer_service<ClockType>::cancel_timer(const timer_context& tc)
+void timer_service<ClockType>::cancel_timer(timer_context& tc)
 {
     static const operation_aborted_error abort_error{};
 
     static const time_point null_point{};
 
-    notify(tc.callback, abort_error, tc.id, null_point);
+    notify(tc, abort_error, null_point);
 }
 
 template <typename ClockType>
 void timer_service<ClockType>::notify(
-	const timer_callback& callback,
-	const generic_error& e,
-    const timer_id& tid,
-	const time_point& tp)
+    timer_context& tc,
+    const generic_error& e,
+    const time_point& tp)
 {
-    port_.post([callback, tid, tp](const generic_error& e)
+    tc.paused = true;
+
+    port_.post([this, callback = tc.callback, tid = tc.id, tp](const generic_error& e)
     {
         callback(e, tid, tp);
+
+        std::unique_lock<std::mutex> lock(guard_);
+
+        resume_timers_.push_back(tid);
+
+        cond_var_.notify_all();
     }, e);
 }
 

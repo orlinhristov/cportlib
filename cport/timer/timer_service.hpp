@@ -32,29 +32,29 @@ namespace timer {
 template <typename ClockType>
 class timer_service {
 public:
-	using clock = ClockType;
+    using clock = ClockType;
 
-	using time_point = typename ClockType::time_point;
+    using time_point = typename ClockType::time_point;
 
-	using time_unit = typename ClockType::duration;
+    using time_unit = typename ClockType::duration;
 
-	using timer_callback = std::function<
-		void(const generic_error&, const timer_id&, const time_point&)
-	>;
+    using timer_callback = std::function<
+        void(const generic_error&, const timer_id&, const time_point&)
+    >;
 
-	using timer_context = detail::timer_context<
-		time_point, time_unit, timer_callback
-	>;
+    using timer_context = detail::timer_context<
+        time_point, time_unit, timer_callback
+    >;
 
     explicit timer_service(completion_port& port);
 
-	timer_service(const timer_service&) = delete;
+    timer_service(const timer_service&) = delete;
 
-	timer_service& operator=(const timer_service&) = delete;
+    timer_service& operator=(const timer_service&) = delete;
 
-	timer_service(timer_service&&) = delete;
+    timer_service(timer_service&&) = delete;
 
-	timer_service& operator=(timer_service&&) = delete;
+    timer_service& operator=(timer_service&&) = delete;
 
     ~timer_service();
 
@@ -65,50 +65,54 @@ public:
 private:
     void timer_thread_routine();
 
-	template <typename Container>
+    template <typename Container>
     void add_timers(Container& c);
 
-	template <typename Container>
+    template <typename Container>
     void del_timers(Container& c);
 
-	template <typename Container>
+    template <typename Container>
+    void resume_timers(Container& c);
+
+    template <typename Container>
     void check_ready_timers(Container& c);
 
-	template <typename Container>
+    template <typename Container>
     void cancel_timers(Container& c);
 
-    void cancel_timer(const timer_context& tc);
+    void cancel_timer(timer_context& tc);
 
     void notify(
-        const timer_callback& callback,
+        timer_context& tc,
         const generic_error& e,
-        const timer_id& tid,
         const time_point& tp
     );
 
-	struct del_timer_info
-	{
-		del_timer_info(timer_id id, bool notify)
-			: id(id), notify(notify)
-		{
-		}
+    struct del_timer_info
+    {
+        del_timer_info(timer_id id, bool notify)
+            : id(id), notify(notify)
+        {
+        }
 
-		timer_id id;
+        timer_id id;
 
-		bool notify;
-	};
+        bool notify;
+    };
 
-	std::vector<del_timer_info> del_timers_;
+    std::vector<del_timer_info> del_timers_;
 
-	std::vector<timer_context> new_timers_;
+    std::vector<timer_context> new_timers_;
 
-	std::thread timer_thread_;
+    std::vector<timer_id> resume_timers_;
 
-	std::condition_variable cond_var_;
+    std::thread timer_thread_;
 
-	std::mutex guard_;
+    std::condition_variable cond_var_;
 
-	completion_port& port_;
+    std::mutex guard_;
+
+    completion_port& port_;
 
     using handler_wrapper = completion_handler_wrapper<
         cport::detail::null_handler_t
@@ -116,7 +120,7 @@ private:
     
     handler_wrapper port_release_wrapper_;
 
-	bool stop_thread_ = false;
+    bool stop_thread_ = false;
 };
 
 } // namespace timer

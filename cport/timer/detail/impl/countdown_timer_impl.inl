@@ -29,8 +29,8 @@ template <typename TimerService>
 bool countdown_timer_impl<TimerService>::start(
     finish_callback finish_cb,
     tick_callback tick_cb,
-	time_unit duration,
-	time_unit interval)
+    time_unit duration,
+    time_unit interval)
 {
     std::unique_lock<std::mutex> lock(guard_);
 
@@ -66,6 +66,12 @@ bool countdown_timer_impl<TimerService>::started() const
 }
 
 template <typename TimerService>
+timer_id countdown_timer_impl<TimerService>::get_id() const
+{
+    return timer_id_;
+}
+
+template <typename TimerService>
 void countdown_timer_impl<TimerService>::cancel()
 {
     std::unique_lock<std::mutex> lock(guard_);
@@ -86,12 +92,18 @@ void countdown_timer_impl<TimerService>::timer_callback(
 {
     if (!ge)
     {
-        if (tp < end_point_)
+        auto finished = tp >= end_point_;
+
+        if (!finished)
         {
             // Invoke the tick callback passing remaining time until the deadline.
             tick_cb_(tid, std::chrono::duration_cast<time_unit>(end_point_ - tp));
+
+            // Check again if the deadline has passed
+            finished = clock::now() >= end_point_;
         }
-        else
+        
+        if (finished)
         {
             service_.remove_timer(tid, false);
 
