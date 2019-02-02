@@ -8,25 +8,19 @@ namespace cport {
 namespace timer {
 
 template <typename TimerService>
-countdown_timer<typename TimerService>::countdown_timer(timer_service& service)
+countdown_timer<typename TimerService>::countdown_timer(basic_timer_service& service)
     : impl_{ new impl_type {service } }
 {
 }
 
 template <typename TimerService>
-countdown_timer<TimerService>::~countdown_timer()
-{
-    cancel();
-}
-
-template <typename TimerService>
 bool countdown_timer<TimerService>::start(
-    finish_callback finish_cb,
+    time_unit interval,
     tick_callback tick_cb,
     time_unit duration,
-    time_unit interval)
+    finish_callback finish_cb)
 {
-    return impl_->start(finish_cb, tick_cb, duration, interval);
+    return impl_->start(interval, tick_cb, duration, finish_cb);
 }
 
 template <typename TimerService>

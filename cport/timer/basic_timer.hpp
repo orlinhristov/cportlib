@@ -1,19 +1,18 @@
-#ifndef __COUNTDOWN_TIMER_HPP__
-#define __COUNTDOWN_TIMER_HPP__
+#ifndef __BASIC_TIMER_HPP__
+#define __BASIC_TIMER_HPP__
 
-#include <cport/timer/detail/countdown_timer_impl.hpp>
+#include <cport/timer/detail/basic_timer_impl.hpp>
 
 namespace cport {
 
 namespace timer {
 
-/// A class used to schedule a countdown timer with a specific duration
-///  and regular notifications on intervals
+/// A class used to start a timer with regular notifications on intervals
 
 template <typename TimerService>
-class countdown_timer {
+class basic_timer {
     /// The implementation type
-    using impl_type = detail::countdown_timer_impl<TimerService>;
+    using impl_type = detail::basic_timer_impl<TimerService>;
 public:
     /// The timer service type
     using basic_timer_service = typename impl_type::basic_timer_service;
@@ -27,37 +26,25 @@ public:
     /// The clock type 
     using clock = typename impl_type::clock;
 
-    /// The type of the finish callback
-    using finish_callback = typename impl_type::finish_callback;
-
     /// The type of the interval callback
-    using tick_callback = typename impl_type::tick_callback;
+    using timer_callback = typename impl_type::timer_callback;
 
     /// Construct a coundown timer
-    explicit countdown_timer(basic_timer_service& service);
+    explicit basic_timer(basic_timer_service& service);
 
     /// Start the countdown timer
     /**
-     * Start a countdown that will invoke a callbacks
+     * Start a basic that will invoke a callback
      *  on regular interval and on finish.
      *
-     * @param finish_cb A callback to be invoked when the countdown finishes.
-     * 
-     * @param tick_cb A callback to be invoked on a regilar interval.
+     * @param callback A callback function to be invoked on a regilar interval.
      *
-     * @param duration The duration after which the coundown should finish.
-     *
-     * @param interval The interval on which to receive regular notifications
+     * @param interval The interval on which to receive regular notifications.
      *
      * @returns This method will return false if the timer is already started,
      *  otherwise it will return true.
      */
-    bool start(
-        time_unit interval,
-        tick_callback tick_cb,
-        time_unit duration,
-        finish_callback finish_cb
-    );
+    bool start(time_unit interval, timer_callback callback);
 
     /// Test if the timer is in progress
     bool started() const;
@@ -84,6 +71,6 @@ private:
 
 } // namespace cport
 
-#include <cport/timer/impl/countdown_timer.inl>
+#include <cport/timer/impl/basic_timer.inl>
 
-#endif //__COUNTDOWN_TIMER_HPP__
+#endif //__BASIC_TIMER_HPP__

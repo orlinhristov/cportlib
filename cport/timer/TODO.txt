@@ -1,0 +1,10 @@
+### IMPROVEMENTS
+
+1. Think of passing timer implementation as template parameter
+2. Think of calling callback in try/catch block to catch std::bad_function_call exception and remove the timer if occurs.
+3. Fix the spelling error in countdown_timer::start() method.
+4. Check if there is a test case for completion_handler_wrapper where an exception is thrown if the handler is called more than once
+
+### BUGS
+1. Countdown will not finish on time if the interval is not multiple of duration
+2. There is a race condition if the service is destroyed while there are active timers

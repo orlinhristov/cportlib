@@ -1,8 +1,9 @@
-#ifndef __TIMER_SERVICE_HPP__
-#define __TIMER_SERVICE_HPP__
+#ifndef __BASIC_TIMER_SERVICE_IMPL_HPP__
+#define __BASIC_TIMER_SERVICE_IMPL_HPP__
 
 #include <chrono>
 #include <functional>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -24,13 +25,11 @@ namespace cport {
 
 namespace timer {
 
-// The ClockType must meet the following requirements:
-//  Declare a std::chrono::time_point type to represents a point in time
-//  Declare a std::chrono::time_unit used to measure the time since epoch
-//  Declare a static method now() that will return current time as a std::chrono::time_point
+namespace detail {
 
 template <typename ClockType>
-class timer_service {
+class basic_timer_service_impl 
+    : public std::enable_shared_from_this<basic_timer_service_impl<ClockType>> {
 public:
     using clock = ClockType;
 
@@ -46,23 +45,27 @@ public:
         time_point, time_unit, timer_callback
     >;
 
-    explicit timer_service(completion_port& port);
+    explicit basic_timer_service_impl(completion_port& port);
 
-    timer_service(const timer_service&) = delete;
+    basic_timer_service_impl(const basic_timer_service_impl&) = delete;
 
-    timer_service& operator=(const timer_service&) = delete;
+    basic_timer_service_impl& operator=(const basic_timer_service_impl&) = delete;
 
-    timer_service(timer_service&&) = delete;
+    basic_timer_service_impl(basic_timer_service_impl&&) = delete;
 
-    timer_service& operator=(timer_service&&) = delete;
+    basic_timer_service_impl& operator=(basic_timer_service_impl&&) = delete;
 
-    ~timer_service();
+    ~basic_timer_service_impl();
 
     timer_id add_timer(time_unit interval, timer_callback callback);
 
     void remove_timer(timer_id id, bool notify);
 
 private:
+    void block_completion_port();
+
+    void release_completion_port();
+
     void timer_thread_routine();
 
     template <typename Container>
@@ -82,7 +85,13 @@ private:
 
     void cancel_timer(timer_context& tc);
 
-    void notify(
+    void invoke_callback_direct(
+        timer_context& tc,
+        const generic_error& e,
+        const time_point& tp
+    );
+
+    void invoke_callback_indirect(
         timer_context& tc,
         const generic_error& e,
         const time_point& tp
@@ -123,10 +132,12 @@ private:
     bool stop_thread_ = false;
 };
 
+} // namespace detail
+
 } // namespace timer
 
 } // namespace cport
 
-#include <cport/timer/impl/timer_service.inl>
+#include <cport/timer/detail/impl/basic_timer_service_impl.inl>
 
-#endif //__TIMER_SERVICE_HPP__
+#endif //__BASIC_TIMER_SERVICE_IMPL_HPP__

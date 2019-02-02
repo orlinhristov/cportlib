@@ -10,82 +10,37 @@ namespace timer {
 namespace detail {
 
 template <typename TimerService>
-countdown_timer_impl<TimerService>::countdown_timer_impl(timer_service& service)
-    : service_{ service }
+countdown_timer_impl<TimerService>::countdown_timer_impl(basic_timer_service& service)
+    : base_class{ service }
 {    
 }
 
 template <typename TimerService>
-countdown_timer_impl<TimerService>::~countdown_timer_impl()
-{
-    //The destructor should not be called before the timer
-    // is canceled and the callback invoked.
-    std::unique_lock<std::mutex> lock(guard_);
-
-    assert(!timer_started_);
-}
-
-template <typename TimerService>
 bool countdown_timer_impl<TimerService>::start(
-    finish_callback finish_cb,
+    time_unit interval,
     tick_callback tick_cb,
     time_unit duration,
-    time_unit interval)
+    finish_callback finish_cb)
 {
-    std::unique_lock<std::mutex> lock(guard_);
-
-    if (timer_started_)
-        return false;
-
-    timer_started_ = true;
-
-    lock.unlock();
-
-    finish_cb_ = finish_cb;
-
-    tick_cb_ = tick_cb;
-
-    end_point_ = clock::now() + duration;
-
-    timer_id_ = service_.add_timer(interval,
-        std::bind(&countdown_timer_impl<TimerService>::timer_callback,
+    return base_class::start(interval,
+        std::bind(&countdown_timer_impl<TimerService>::timer_cb,
             this->shared_from_this(),
             std::placeholders::_1,
             std::placeholders::_2,
-            std::placeholders::_3));
+            std::placeholders::_3),
+            [=]() {
+                finish_cb_ = finish_cb;
+
+                tick_cb_ = tick_cb;
+
+                end_point_ = clock::now() + duration;
+            });
 
     return true;
 }
 
 template <typename TimerService>
-bool countdown_timer_impl<TimerService>::started() const
-{
-    std::unique_lock<std::mutex> lock(guard_);
-
-    return timer_started_;
-}
-
-template <typename TimerService>
-timer_id countdown_timer_impl<TimerService>::get_id() const
-{
-    return timer_id_;
-}
-
-template <typename TimerService>
-void countdown_timer_impl<TimerService>::cancel()
-{
-    std::unique_lock<std::mutex> lock(guard_);
-
-    if (timer_started_)
-    {
-        lock.unlock();
-
-        service_.remove_timer(timer_id_, true);
-    }
-}
-
-template <typename TimerService>
-void countdown_timer_impl<TimerService>::timer_callback(
+void countdown_timer_impl<TimerService>::timer_cb(
     const generic_error& ge,
     const timer_id& tid,
     const time_point& tp)
@@ -105,30 +60,15 @@ void countdown_timer_impl<TimerService>::timer_callback(
         
         if (finished)
         {
-            service_.remove_timer(tid, false);
+            base_class::service().remove_timer(tid, false);
 
-            invoke_finish(ge, tid);
+            finish_cb_(ge, tid);
         }
     }
     else
     {
-        invoke_finish(ge, tid);
+        finish_cb_(ge, tid);
     }
-}
-
-template <typename TimerService>
-void countdown_timer_impl<TimerService>::invoke_finish(
-    const generic_error& ge,
-    const timer_id& tid
-)
-{
-    std::unique_lock<std::mutex> lock(guard_);
-
-    timer_started_ = false;
-
-    lock.unlock();
-
-    finish_cb_(ge, tid);
 }
 
 } // namespace detail
