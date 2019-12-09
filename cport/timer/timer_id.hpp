@@ -16,7 +16,7 @@ constexpr timer_id invalid_timer_id = timer_id{};
 
 inline timer_id get_next_timer_id()
 {
-    static std::atomic<timer_id> next = timer_id{};
+    static std::atomic<timer_id> next{timer_id{}};
 
     if (next == std::numeric_limits<timer_id>::max())
     {

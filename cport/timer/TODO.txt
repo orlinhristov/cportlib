@@ -8,3 +8,4 @@
 ### BUGS
 1. Countdown will not finish on time if the interval is not multiple of duration
 2. There is a race condition if the service is destroyed while there are active timers
+3. There is a rece condition in get_next_timer_id(), in timer_id.hpp
