@@ -17,11 +17,11 @@ class countdown_timer_impl : public basic_timer_impl<TimerService>
 public:
     using basic_timer_service = TimerService;
 
-    using time_unit = base_class::time_unit;
+    using time_unit = typename base_class::time_unit;
 
-    using time_point = base_class::time_point;
+    using time_point = typename base_class::time_point;
 
-    using clock = base_class::clock;
+    using clock = typename base_class::clock;
 
     using finish_callback = std::function<
         void(const generic_error&, const timer_id&)

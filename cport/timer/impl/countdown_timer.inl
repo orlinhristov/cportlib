@@ -8,7 +8,7 @@ namespace cport {
 namespace timer {
 
 template <typename TimerService>
-countdown_timer<typename TimerService>::countdown_timer(basic_timer_service& service)
+countdown_timer<TimerService>::countdown_timer(basic_timer_service& service)
     : impl_{ new impl_type {service } }
 {
 }
