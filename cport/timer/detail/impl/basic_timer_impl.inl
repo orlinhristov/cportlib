@@ -23,12 +23,30 @@ basic_timer_impl<TimerService>::~basic_timer_impl()
 
 template <typename TimerService>
 bool basic_timer_impl<TimerService>::start(
+    timer_callback callback,
+    time_unit interval)
+{
+    return start(callback, interval, time_point{});
+}
+
+template <typename TimerService>
+bool basic_timer_impl<TimerService>::start(
+    timer_callback callback,
     time_unit interval,
-    timer_callback callback)
+    time_unit expire_after)
+{
+    return start(interval, callback, expire_after + clock::now());
+}
+
+template <typename TimerService>
+bool basic_timer_impl<TimerService>::start(
+    timer_callback callback,
+    time_unit interval,
+    time_point expire_time)
 {
     static auto null_initalizer = []() {};
 
-    return start(interval, callback, null_initalizer);
+    return start(interval, callback, expire_time, null_initalizer);
 }
 
 template <typename TimerService>
@@ -73,6 +91,7 @@ template <typename Func>
 bool basic_timer_impl<TimerService>::start(
     time_unit interval,
     timer_callback callback,
+    time_point expire_time,
     Func initalizer)
 {
     assert(callback);
@@ -86,7 +105,7 @@ bool basic_timer_impl<TimerService>::start(
 
     timer_started_ = true;
 
-    timer_id_ = service_.add_timer(interval, callback);
+    timer_id_ = service_.add_timer(callback, interval, expire_time);
 
     return true;
 }

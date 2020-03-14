@@ -15,10 +15,28 @@ basic_timer<typename TimerService>::basic_timer(basic_timer_service& service)
 
 template <typename TimerService>
 bool basic_timer<TimerService>::start(
-    time_unit interval,
-    timer_callback callback)
+    timer_callback callback,
+    time_unit interval)
 {
-    return impl_->start(interval, callback);
+    return impl_->start(callback, interval);
+}
+
+template <typename TimerService>
+bool basic_timer<TimerService>::start(
+    timer_callback callback,
+    time_unit interval,
+    time_unit expire_after)
+{
+    return impl_->start(callback, interval, expire_after);
+}
+
+template <typename TimerService>
+bool basic_timer<TimerService>::start(
+    timer_callback callback,
+    time_unit interval,
+    time_point expire_time)
+{
+    return impl_->start(callback, interval, expire_time);
 }
 
 template <typename TimerService>

@@ -14,9 +14,21 @@ basic_timer_service<ClockType>::basic_timer_service(completion_port& port)
 }
 
 template <typename ClockType>
-timer_id basic_timer_service<ClockType>::add_timer(time_unit interval, timer_callback callback)
+timer_id basic_timer_service<ClockType>::add_timer(timer_callback callback, time_unit interval)
 {
-    return impl_->add_timer(interval, callback);
+    return impl_->add_timer(callback, interval);
+}
+
+template <typename ClockType>
+timer_id basic_timer_service<ClockType>::add_timer(timer_callback callback, time_unit interval, time_unit expire_after)
+{
+    return impl_->add_timer(callback, interval, expire_after);
+}
+
+template <typename ClockType>
+timer_id basic_timer_service<ClockType>::add_timer(timer_callback callback, time_unit interval, time_point expire_time)
+{
+    return impl_->add_timer(callback, interval, expire_time);
 }
 
 template <typename ClockType>

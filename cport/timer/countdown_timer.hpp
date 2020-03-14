@@ -41,14 +41,14 @@ public:
      * Start a countdown that will invoke a callbacks
      *  on regular interval and on finish.
      *
-     * @param finish_cb A callback to be invoked when the countdown finishes.
-     * 
+     * @param interval The interval on which to receive regular notifications
+     *
      * @param tick_cb A callback to be invoked on a regilar interval.
      *
      * @param duration The duration after which the coundown should finish.
      *
-     * @param interval The interval on which to receive regular notifications
-     *
+     * @param finish_cb A callback to be invoked when the countdown finishes.
+     * 
      * @returns This method will return false if the timer is already started,
      *  otherwise it will return true.
      */
@@ -71,8 +71,8 @@ public:
 
     /// Cancel the timer
     /**
-     * This method has no effect if the timer was not start
-     *  or was finished
+     * This method has no effect if the timer hasn't been started
+     *  or has finished
      */
     void cancel();
 

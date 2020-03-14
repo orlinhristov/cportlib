@@ -19,7 +19,7 @@ class completion_port;
 namespace timer {
 
 // The ClockType must meet the following requirements:
-//  Declare a std::chrono::time_point type to represents a point in time
+//  Declare a std::chrono::time_point type to represent a point in time
 //  Declare a std::chrono::time_unit used to measure the time since epoch
 //  Declare a static method now() that will return current time as a std::chrono::time_point
 
@@ -38,7 +38,11 @@ public:
 
     explicit basic_timer_service(completion_port& port);
 
-    timer_id add_timer(time_unit interval, timer_callback callback);
+    timer_id add_timer(timer_callback callback, time_unit interval);
+
+    timer_id add_timer(timer_callback callback, time_unit interval, time_unit expire_after);
+
+    timer_id add_timer(timer_callback callback, time_unit interval, time_point expire_time);
 
     void remove_timer(timer_id id, bool notify);
 private:

@@ -22,21 +22,22 @@ bool countdown_timer_impl<TimerService>::start(
     time_unit duration,
     finish_callback finish_cb)
 {
+    const auto expire_time = clock::now() + duration;
+
     return base_class::start(interval,
         std::bind(&countdown_timer_impl<TimerService>::timer_cb,
             this->shared_from_this(),
             std::placeholders::_1,
             std::placeholders::_2,
             std::placeholders::_3),
+            expire_time,
             [=]() {
                 finish_cb_ = finish_cb;
 
                 tick_cb_ = tick_cb;
 
-                end_point_ = clock::now() + duration;
+                end_point_ = expire_time;
             });
-
-    return true;
 }
 
 template <typename TimerService>

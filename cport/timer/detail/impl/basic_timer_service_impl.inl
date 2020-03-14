@@ -42,22 +42,54 @@ basic_timer_service_impl<ClockType>::~basic_timer_service_impl()
 
 template <typename ClockType>
 timer_id basic_timer_service_impl<ClockType>::add_timer(
+    timer_callback callback,
+    time_unit interval)
+{
+    return add_timer(callback, interval, time_point{});
+}
+
+template <typename ClockType>
+timer_id basic_timer_service_impl<ClockType>::add_timer(
+    timer_callback callback,
     time_unit interval,
-    timer_callback callback)
+    time_unit expire_after)
+{
+    time_point expire_time{};
+
+    if (expire_after != time_unit{})
+    {
+        expire_time = clock::now() + expire_after;
+    }
+
+    return add_timer(callback, interval, expire_time);
+}
+
+template <typename ClockType>
+timer_id basic_timer_service_impl<ClockType>::add_timer(
+    timer_callback callback,
+    time_unit interval,
+    time_point expire_time)
 {
     const auto next_timer_id = get_next_timer_id();
 
     std::unique_lock<std::mutex> lock(guard_);
 
-    new_timers_.emplace_back(next_timer_id, interval, callback);
+    new_timers_.emplace_back(next_timer_id, interval, callback, expire_time);
 
-    new_timers_.back().next_point = interval + clock::now();
+    auto& new_timer = new_timers_.back();
 
-    block_completion_port();
+    const auto err = new_timer.resume(clock::now());
 
-    cond_var_.notify_all();
+    if (!err)
+    {
+        block_completion_port();
 
-    return next_timer_id;
+        cond_var_.notify_all();
+
+        return next_timer_id;
+    }
+
+    return invalid_timer_id;
 }
 
 template <typename ClockType>
@@ -65,13 +97,9 @@ void basic_timer_service_impl<ClockType>::remove_timer(
     timer_id id,
     bool notify)
 {
-    auto success = false;
-
     std::unique_lock<std::mutex> lock(guard_);
 
-    del_timers_.emplace_back(id, notify);
-
-    cond_var_.notify_all();
+    remove_timer_no_lock(id, notify);
 }
 
 
@@ -94,7 +122,7 @@ void basic_timer_service_impl<ClockType>::release_completion_port()
     if (port_release_wrapper_)
     {
         // Release all threads waiting for completion
-        // if there is not timers
+        // if there is no timers
         port_release_wrapper_();
     }
 }
@@ -111,8 +139,8 @@ void basic_timer_service_impl<ClockType>::timer_thread_routine()
         if (!stop_thread_ && new_timers_.empty()
             && del_timers_.empty() && resume_timers_.empty())
         {
-            // Check if there is not timers or all are paused
-            if (timer_heap.empty() || timer_heap.back().paused)
+            // if there is not timers or all are paused
+            if (timer_heap.empty() || timer_heap.back().paused())
             {
                 if (timer_heap.empty())
                 {
@@ -128,9 +156,11 @@ void basic_timer_service_impl<ClockType>::timer_thread_routine()
                 const auto& next_timer = timer_heap.back();
 
                 // Wait until the most recent time occurs or some event is set
-                cond_var_.wait_until(lock, next_timer.next_point);
+                cond_var_.wait_until(lock, next_timer.next_point());
             }
         }
+
+        const auto current_time = clock::now();
 
         if (stop_thread_)
         {
@@ -147,7 +177,7 @@ void basic_timer_service_impl<ClockType>::timer_thread_routine()
 
         lock.unlock();
 
-        check_ready_timers(timer_heap);
+        check_ready_timers(timer_heap, current_time);
     }
 }
 
@@ -174,7 +204,7 @@ void basic_timer_service_impl<ClockType>::del_timers(Container& c)
         {
             for (const auto& del_timer : del_timers_)
             {
-                if (del_timer.id == ctxt.id)
+                if (del_timer.id == ctxt.id())
                 {
                     if (del_timer.notify)
                     {
@@ -200,27 +230,9 @@ void basic_timer_service_impl<ClockType>::resume_timers(Container& c)
     {
         for (auto i = c.rbegin(), e = c.rend(); i != e; ++i)
         {
-            if (i->id == tid)
+            if (i->id() == tid)
             {
-                assert(i->paused);
-
-                // Calc the next time point at which the timer has to be notified
-                const auto& last_point = i->next_point;
-
-                const auto& current_point = clock::now();
-
-                const auto multiplier = int((current_point - last_point) / i->interval);
-
-                i->next_point += i->interval * multiplier;
-
-                if (i->next_point < current_point)
-                {
-                    i->next_point += i->interval;
-                }
-
-                assert(i->next_point >= current_point);
-
-                i->paused = false;
+                resume_timer(*i);
 
                 break;
             }
@@ -232,22 +244,20 @@ void basic_timer_service_impl<ClockType>::resume_timers(Container& c)
 
 template <typename ClockType>
 template <typename Container>
-void basic_timer_service_impl<ClockType>::check_ready_timers(Container& c)
+void basic_timer_service_impl<ClockType>::check_ready_timers(Container& c, const time_point& current_time)
 {
     static const auto heap_pred = [](const timer_context& a, const timer_context& b)
     {
-        if (a.paused != b.paused)
+        if (a.paused() != b.paused())
         {
-            return a.paused ? true : false;
+            return a.paused();
         }
 
-        return !(a.next_point < b.next_point);
+        return !(a.next_point() < b.next_point());
     };
 
     if (c.empty())
         return;
-
-    const auto current_point = clock::now();
 
     // Rearrange the timers so that the one with the 
     // most recent time will go on top
@@ -257,9 +267,9 @@ void basic_timer_service_impl<ClockType>::check_ready_timers(Container& c)
 
     auto& tc = c.back();
 
-    while (!tc.paused && current_point >= tc.next_point)
+    while (!tc.paused() && current_time >= tc.next_point())
     {
-        invoke_callback_indirect(tc, generic_error{}, current_point);
+        invoke_callback_indirect(tc, generic_error{}, current_time);
 
         std::make_heap(c.begin(), c.end(), heap_pred);
 
@@ -301,14 +311,51 @@ void basic_timer_service_impl<ClockType>::cancel_timer(timer_context& tc)
 }
 
 template <typename ClockType>
+void basic_timer_service_impl<ClockType>::resume_timer(timer_context& tc)
+{
+    const auto& current_point = clock::now();
+
+    auto err = tc.resume(current_point);
+
+    if (err)
+    {
+        invoke_callback_indirect(tc, err, current_point);
+
+        remove_timer_no_lock(tc.id(), false);
+    }
+}
+
+template <typename ClockType>
+void basic_timer_service_impl<ClockType>::resume_timer(timer_id tid)
+{
+    std::unique_lock<std::mutex> lock(guard_);
+
+    if (!stop_thread_)
+    {
+        resume_timers_.push_back(tid);
+
+        cond_var_.notify_all();
+    }
+}
+
+template <typename ClockType>
+void basic_timer_service_impl<ClockType>::remove_timer_no_lock(timer_id id,
+    bool notify)
+{
+    del_timers_.emplace_back(id, notify);
+
+    cond_var_.notify_all();
+}
+
+template <typename ClockType>
 void basic_timer_service_impl<ClockType>::invoke_callback_direct(
     timer_context& tc,
     const generic_error& e,
     const time_point& tp)
 {
-    tc.paused = true;
+    tc.pause();
 
-    tc.callback(e, tc.id, tp);
+    tc.invoke_callback(e, tp);
 }
 
 template <typename ClockType>
@@ -317,21 +364,17 @@ void basic_timer_service_impl<ClockType>::invoke_callback_indirect(
     const generic_error& e,
     const time_point& tp)
 {
-    tc.paused = true;
+    tc.pause();
 
     auto ptr = this->shared_from_this();
 
     port_.post(
-        [ptr, callback = tc.callback, tid = tc.id, tp](const generic_error& e)
-    {
-        callback(e, tid, tp);
+        [ptr, tc, tp](const generic_error& e) mutable
+        {
+            tc.invoke_callback(e, tp);
 
-        std::unique_lock<std::mutex> lock(ptr->guard_);
-
-        ptr->resume_timers_.push_back(tid);
-
-        ptr->cond_var_.notify_all();
-    }, e);
+            ptr->resume_timer(tc.id());
+        }, e);
 }
 
 } // namespace detail

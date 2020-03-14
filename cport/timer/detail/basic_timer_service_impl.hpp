@@ -57,7 +57,11 @@ public:
 
     ~basic_timer_service_impl();
 
-    timer_id add_timer(time_unit interval, timer_callback callback);
+    timer_id add_timer(timer_callback callback, time_unit interval);
+
+    timer_id add_timer(timer_callback callback, time_unit interval, time_unit expire_after);
+
+    timer_id add_timer(timer_callback callback, time_unit interval, time_point expire_time);
 
     void remove_timer(timer_id id, bool notify);
 
@@ -78,12 +82,19 @@ private:
     void resume_timers(Container& c);
 
     template <typename Container>
-    void check_ready_timers(Container& c);
+    void check_ready_timers(Container& c,
+        const time_point& current_time);
 
     template <typename Container>
     void cancel_timers(Container& c);
 
     void cancel_timer(timer_context& tc);
+
+    void resume_timer(timer_context& tc);
+
+    void resume_timer(timer_id tid);
+
+    void remove_timer_no_lock(timer_id id, bool notify);
 
     void invoke_callback_direct(
         timer_context& tc,

@@ -33,7 +33,11 @@ public:
 
     ~basic_timer_impl();
 
-    bool start(time_unit interval, timer_callback callback);
+    bool start(timer_callback callback, time_unit interval);
+
+    bool start(timer_callback callback, time_unit interval, time_unit expire_after);
+
+    bool start(timer_callback callback, time_unit interval, time_point expire_time);
 
     bool started() const;
 
@@ -45,7 +49,7 @@ public:
 
 protected:
     template <typename Func>
-    bool start(time_unit interval, timer_callback callback, Func initalizer);
+    bool start(time_unit interval, timer_callback callback, time_point expire_time, Func initalizer);
 
 private:
     // Timer service used to initialize the object

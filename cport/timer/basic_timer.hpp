@@ -32,10 +32,10 @@ public:
     /// Construct a coundown timer
     explicit basic_timer(basic_timer_service& service);
 
-    /// Start the countdown timer
+    /// Start the timer
     /**
-     * Start a basic that will invoke a callback
-     *  on regular interval and on finish.
+     * Start a timer that will invoke the callback on regular intervals,
+     *  until the timer is canceled.
      *
      * @param callback A callback function to be invoked on a regilar interval.
      *
@@ -44,7 +44,35 @@ public:
      * @returns This method will return false if the timer is already started,
      *  otherwise it will return true.
      */
-    bool start(time_unit interval, timer_callback callback);
+    bool start(timer_callback callback, time_unit interval);
+
+    /// Start the timer
+    /**
+     * Start a timer that will invoke the callback on regular intervals
+     *  and expires after a specified duration.
+     *
+     * @param callback A callback function to be invoked on a regilar interval.
+     *
+     * @param interval The interval on which to receive regular notifications.
+     *
+     * @returns This method will return false if the timer is already started,
+     *  otherwise it will return true.
+     */
+    bool start(timer_callback callback, time_unit interval, time_unit expire_after);
+
+    /// Start the timer
+    /**
+     * Start a timer that will invoke the callback on regular intervals
+     *  and expires at specified time.
+     *
+     * @param callback A callback function to be invoked on a regilar interval.
+     *
+     * @param interval The interval on which to receive regular notifications.
+     *
+     * @returns This method will return false if the timer is already started,
+     *  otherwise it will return true.
+     */
+    bool start(timer_callback callback, time_unit interval, time_point expire_time);
 
     /// Test if the timer is in progress
     bool started() const;
