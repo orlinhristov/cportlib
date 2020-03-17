@@ -79,7 +79,8 @@ private:
     void del_timers(Container& c);
 
     template <typename Container>
-    void resume_timers(Container& c);
+    void resume_timers(Container& c,
+        const time_point& current_time);
 
     template <typename Container>
     void check_ready_timers(Container& c,
@@ -90,7 +91,7 @@ private:
 
     void cancel_timer(timer_context& tc);
 
-    void resume_timer(timer_context& tc);
+    void resume_timer(timer_context& tc, const time_point& current_point);
 
     void resume_timer(timer_id tid);
 

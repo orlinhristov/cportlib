@@ -45,7 +45,9 @@ timer_id basic_timer_service_impl<ClockType>::add_timer(
     timer_callback callback,
     time_unit interval)
 {
-    return add_timer(callback, interval, time_point{});
+    static const time_point null_point{};
+
+    return add_timer(callback, interval, null_point);
 }
 
 template <typename ClockType>
@@ -173,7 +175,7 @@ void basic_timer_service_impl<ClockType>::timer_thread_routine()
 
         del_timers(timer_heap);
 
-        resume_timers(timer_heap);
+        resume_timers(timer_heap, current_time);
 
         lock.unlock();
 
@@ -224,7 +226,7 @@ void basic_timer_service_impl<ClockType>::del_timers(Container& c)
 
 template <typename ClockType>
 template <typename Container>
-void basic_timer_service_impl<ClockType>::resume_timers(Container& c)
+void basic_timer_service_impl<ClockType>::resume_timers(Container& c, const time_point& current_time)
 {
     for (const auto& tid : resume_timers_)
     {
@@ -232,7 +234,7 @@ void basic_timer_service_impl<ClockType>::resume_timers(Container& c)
         {
             if (i->id() == tid)
             {
-                resume_timer(*i);
+                resume_timer(*i, current_time);
 
                 break;
             }
@@ -253,7 +255,7 @@ void basic_timer_service_impl<ClockType>::check_ready_timers(Container& c, const
             return a.paused();
         }
 
-        return !(a.next_point() < b.next_point());
+        return b.next_point() < a.next_point();
     };
 
     if (c.empty())
@@ -277,7 +279,6 @@ void basic_timer_service_impl<ClockType>::check_ready_timers(Container& c, const
 
         tc = c.back();
     }
-
 }
 
 template <typename ClockType>
@@ -311,10 +312,8 @@ void basic_timer_service_impl<ClockType>::cancel_timer(timer_context& tc)
 }
 
 template <typename ClockType>
-void basic_timer_service_impl<ClockType>::resume_timer(timer_context& tc)
+void basic_timer_service_impl<ClockType>::resume_timer(timer_context& tc, const time_point& current_point)
 {
-    const auto& current_point = clock::now();
-
     auto err = tc.resume(current_point);
 
     if (err)
@@ -333,6 +332,8 @@ void basic_timer_service_impl<ClockType>::resume_timer(timer_id tid)
     if (!stop_thread_)
     {
         resume_timers_.push_back(tid);
+
+        lock.unlock();
 
         cond_var_.notify_all();
     }
